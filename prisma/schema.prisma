@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+
+model User {
+  id              String           @id @default(uuid())
+  name            String
+  email           String           @unique
+  password        String
+  role            Role             @default(USER)
+  createdAt       DateTime         @default(now()) @map("created_at")
+  serviceRequests ServiceRequest[]
+
+  @@map("users")
+}
+
+model ServiceRequest {
+  id          String        @id @default(uuid())
+  userId      String        @map("user_id")
+  serviceType String        @map("service_type")
+  description String        @db.Text
+  location    String
+  latitude    Float?        @map("latitude")
+  longitude   Float?        @map("longitude")
+  status      RequestStatus @default(APPROVED)
+  price       Float?
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@map("service_requests")
+}
+
+model AdminLog {
+  id        String   @id @default(uuid())
+  adminId   String   @map("admin_id")
+  action    String
+  targetId  String?  @map("target_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("admin_logs")
+}

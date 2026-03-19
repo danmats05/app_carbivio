@@ -1,26 +1,266 @@
+@import url("https://fonts.googleapis.com/css2?family=Special+Gothic+Expanded+One&display=swap");
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@custom-variant dark (&:is(.dark *));
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom rule for numbers in inputs */
+.numbers-idgrotesk input::placeholder,
+.numbers-idgrotesk input {
+  font-family: inherit;
+}
+
+.numbers-idgrotesk input::-webkit-input-placeholder,
+.numbers-idgrotesk input::-moz-placeholder,
+.numbers-idgrotesk input:-ms-input-placeholder {
+  font-family: inherit;
+}
+
+/* Apply IDGrotesk only to digits in text content - VERSION 2.0 */
+.numbers-idgrotesk {
+  font-family: "IDGrotesk", sans-serif !important;
+}
+
+.numbers-idgrotesk::before,
+.numbers-idgrotesk::after {
+  font-family: inherit;
+}
+
+/* Heuvel Grotesk font */
+@font-face {
+  font-family: "Heuvel Grotesk";
+  src: url("../assets/fonts/heuvel_grotesk/HeuvelGroteskDEMO-SemiBold.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Heuvel Grotesk";
+  src: url("../assets/fonts/heuvel_grotesk/HeuvelGroteskDEMO-Bold.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Heuvel Grotesk";
+  src: url("../assets/fonts/heuvel_grotesk/HeuvelGroteskDEMO-Black.ttf")
+    format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* IDGrotesk font for numbers */
+@font-face {
+  font-family: "IDGrotesk";
+  src: url("../assets/fonts/IDGrotesk-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Brand palette officielle */
+  --color-background: #151514;
+  --color-foreground: #ffffff;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --color-card: #231304;
+  --color-card-foreground: #ffffff;
+
+  --color-popover: #2a1605;
+  --color-popover-foreground: #ffffff;
+
+  /* Orange vif — couleur primaire */
+  --color-primary: #eca226;
+  --color-primary-foreground: #000000;
+
+  --color-secondary: #231304;
+  --color-secondary-foreground: #ffffff;
+
+  --color-muted: #231304;
+  --color-muted-foreground: #888888;
+
+  --color-accent: #eca226;
+  --color-accent-foreground: #000000;
+
+  --color-destructive: #ff4d4d;
+  --color-destructive-foreground: #ffffff;
+
+  --color-border: #2e1a06;
+  --color-input: #1a0d02;
+  --color-ring: #eca226;
+
+  /* Status colors */
+  --color-success: #00d68f;
+  --color-warning: #eca226;
+  --color-info: #d7a351;
+
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+  --animate-marquee: marquee var(--duration) linear infinite;
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand: var(--brand);
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
   }
 }
 
+* {
+  border-color: var(--color-border);
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: "Heuvel Grotesk", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numbers with IDGrotesk - Global application */
+.numbers-idgrotesk {
+  font-family: "IDGrotesk", sans-serif;
+}
+
+/* Apply IDGrotesk to all numbers globally - FORCE OVERRIDE */
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: "Heuvel Grotesk", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Global number styling - FORCE IDGrotesk for ALL digits */
+.number,
+.numbers,
+[class*="number-"],
+[class*="stats-"],
+[class*="count-"],
+[class*="amount-"],
+[class*="price-"],
+[class*="time-"],
+[class*="duration-"],
+[class*="percentage-"],
+[class*="ratio-"] {
+  font-family: "IDGrotesk", sans-serif !important;
+}
+
+/* Apply to specific number patterns */
+.text-4xl,
+.text-5xl,
+.text-6xl,
+.text-7xl,
+.text-8xl,
+.text-9xl {
+  font-family: "Heuvel Grotesk", sans-serif;
+}
+
+/* Override for numbers within large text - FORCE IDGrotesk */
+.text-4xl .numbers-idgrotesk,
+.text-5xl .numbers-idgrotesk,
+.text-6xl .numbers-idgrotesk,
+.text-7xl .numbers-idgrotesk,
+.text-8xl .numbers-idgrotesk,
+.text-9xl .numbers-idgrotesk {
+  font-family: "IDGrotesk", sans-serif !important;
+}
+
+/* Universal number styling */
+.auto-number {
+  font-family: "IDGrotesk", sans-serif !important;
+}
+
+/* Global automatic number detection */
+[data-number="true"],
+.number-text,
+.stat-number,
+.count-text,
+.price-text,
+.time-text,
+.duration-text {
+  font-family: "IDGrotesk", sans-serif !important;
+}
+
+/* Special rule for stats - override font-montserrat */
+.font-montserrat.font-extrabold {
+  font-family: "IDGrotesk", sans-serif !important;
+}
+::-webkit-scrollbar-thumb {
+  background: #765a34;
+  border-radius: 100px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #eca226;
+}
+
+/* Glow effect for primary elements */
+.glow-orange {
+  box-shadow:
+    0 0 20px rgba(236, 162, 38, 0.35),
+    0 0 60px rgba(236, 162, 38, 0.1);
+}
+
+/* Glassmorphism surface */
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Font classes */
+.font-special-gothic {
+  font-family: "Special Gothic Expanded One", sans-serif;
+}
+
+.font-heuvel {
+  font-family: "Heuvel Grotesk", sans-serif;
+}
+
+.font-idgrotesk {
+  font-family: "IDGrotesk", sans-serif;
+}
+
+/* Numbers with IDGrotesk */
+.numbers-idgrotesk {
+  font-family: "IDGrotesk", sans-serif;
+}
+
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(240 10% 3.9%);
+  --brand: hsl(266 100% 50%);
+  --brand-foreground: hsl(270 100% 98%);
+  --muted: hsl(240 4.8% 95.9%);
+  --muted-foreground: hsl(240 3.8% 46.1%);
+}
+
+.dark {
+  --background: hsl(240 10% 3.9%);
+  --foreground: hsl(0 0% 98%);
+  --brand: hsl(266 70% 60%);
+  --brand-foreground: hsl(270 100% 98%);
+  --muted: hsl(240 3.7% 15.9%);
+  --muted-foreground: hsl(240 5% 64.9%);
 }

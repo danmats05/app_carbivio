@@ -50,7 +50,7 @@ Ouvrez ensuite [http://localhost:3000](http://localhost:3000).
 | Champ            | Valeur               |
 | ---------------- | -------------------- |
 | **Email**        | `admin@carbivio.com` |
-| **Mot de passe** | `admin123`           |
+| **Mot de passe** | `admin123456`        |
 | **Rôle**         | `ADMIN`              |
 
 ### Utilisateur normal

@@ -50,7 +50,7 @@ export const Footer = ({
             <div className="w-full flex flex-col items-center">
               <div className="space-y-2 flex flex-col items-center flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-foreground text-3xl font-bold">
+                  <span className="text-card-foreground text-3xl font-bold">
                     {brandName}
                   </span>
                 </div>

@@ -1,0 +1,534 @@
+"use client";
+
+import {
+  // Navigation & Layout
+  ChartLine,
+  Truck,
+  Users,
+  MapPin,
+  Package,
+  ChartBar,
+  Gear,
+  CaretLeft,
+  CaretRight,
+  CaretDown,
+  CaretUp,
+  House,
+  
+  // Actions & Interactions
+  MagnifyingGlass,
+  Bell,
+  Eye,
+  ArrowRight,
+  ArrowLeft,
+  ArrowUp,
+  ArrowDown,
+  Plus,
+  Minus,
+  X,
+  Check,
+  PencilSimple,
+  Trash,
+  Download,
+  Upload,
+  DotsThree,
+  DotsSix,
+  
+  // Status & Indicators
+  TrendUp,
+  TrendDown,
+  Circle,
+  Square,
+  Triangle,
+  Star,
+  Heart,
+  Warning,
+  Info,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Calendar,
+  
+  // Energy & Resources
+  GasPump,
+  Lightning,
+  Drop,
+  BatteryCharging,
+  BatteryFull,
+  BatteryEmpty,
+  Flame,
+  Sun,
+  Moon,
+  
+  // Business & Finance
+  CurrencyDollar,
+  CurrencyEuro,
+  CurrencyBtc,
+  CreditCard,
+  Wallet,
+  PiggyBank,
+  ChartPie,
+  ChartLineUp,
+  ChartLineDown,
+  
+  // Communication
+  Phone,
+  Envelope,
+  ChatCircle,
+  ChatDots,
+  SpeakerHigh,
+  SpeakerSlash,
+  Microphone,
+  MicrophoneSlash,
+  
+  // Media & Files
+  Image,
+  File,
+  Folder,
+  FolderOpen,
+  FileText,
+  FilePdf,
+  FileZip,
+  Play,
+  Pause,
+  Stop,
+  
+  // System
+  GearSix,
+  Power,
+  Lock,
+  Unlock,
+  Key,
+  Shield,
+  Flag,
+  Bookmark,
+  ShareNetwork,
+  
+  // Social
+  User,
+  UsersThree,
+  UserCircle,
+  UserPlus,
+  UserMinus,
+  HandWaving,
+  ThumbsUp,
+  ThumbsDown,
+  
+  // Transportation
+  Car,
+  Airplane,
+  Train,
+  Ship,
+  Bicycle,
+  Motorcycle,
+  
+  // Shopping & Commerce
+  ShoppingCart,
+  Storefront,
+  Package,
+  Box,
+  Tag,
+  Barcode,
+  Receipt,
+  
+  // Maps & Location
+  MapPin,
+  MapTrifold,
+  Compass,
+  NavigationArrow,
+  Signpost,
+  
+  // Time & Calendar
+  Clock,
+  ClockClockwise,
+  ClockCounterClockwise,
+  Calendar,
+  CalendarBlank,
+  CalendarCheck,
+  
+  // Weather & Nature
+  Cloud,
+  CloudRain,
+  CloudSun,
+  Snowflake,
+  Tree,
+  Leaf,
+  
+  // Miscellaneous
+  Hash,
+  At,
+  Hashtag,
+  Link,
+  LinkBreak,
+  Copy,
+  Scissors,
+  Eraser,
+  
+  // Custom Carbivio specific icons
+  GasPump as Fuel,
+  Drop as Droplet,
+  Lightning as Zap,
+  Circle as CircleDot,
+  ChartLine as LayoutDashboard,
+  ChartBar as BarChart3,
+  Gear as Settings,
+  CaretLeft as ChevronLeft,
+  House as Home,
+  CurrencyDollar as DollarSign,
+  Users as UsersIcon,
+  TrendUp as TrendingUp,
+  TrendDown as TrendingDown,
+  MagnifyingGlass as Search,
+  Calendar as CalendarDays,
+  Bell as BellIcon,
+  Eye as EyeIcon,
+  ArrowRight as ArrowRightIcon,
+  DotsThree as MoreHorizontal,
+} from "@phosphor-icons/react";
+
+/**
+ * Hook centralisé pour les icônes Phosphor
+ * Règle : TOUJOURS utiliser les icônes Phosphor dans tout le projet Carbivio
+ * 
+ * @example
+ * ```tsx
+ * import { useIcons } from "@/hooks/useIcons";
+ * 
+ * function MyComponent() {
+ *   const { icons } = useIcons();
+ *   
+ *   return (
+ *     <div>
+ *       <icons.Truck className="w-5 h-5" />
+ *       <icons.TrendUp className="w-4 h-4 text-green-500" />
+ *     </div>
+ *   );
+ * }
+ * ```
+ */
+
+export function useIcons() {
+  return {
+    // Navigation & Layout
+    navigation: {
+      dashboard: ChartLine,
+      fleet: Truck,
+      users: Users,
+      locations: MapPin,
+      orders: Package,
+      analytics: ChartBar,
+      settings: Gear,
+      home: House,
+    },
+    
+    // Actions
+    actions: {
+      search: MagnifyingGlass,
+      notifications: Bell,
+      view: Eye,
+      add: Plus,
+      remove: Minus,
+      edit: PencilSimple,
+      delete: Trash,
+      download: Download,
+      upload: Upload,
+      more: DotsThree,
+      close: X,
+      check: Check,
+      back: CaretLeft,
+      forward: CaretRight,
+    },
+    
+    // Status & Indicators
+    status: {
+      success: CheckCircle,
+      error: XCircle,
+      warning: Warning,
+      info: Info,
+      loading: Clock,
+      pending: Clock,
+      completed: CheckCircle,
+      cancelled: XCircle,
+    },
+    
+    // Trends
+    trends: {
+      up: TrendUp,
+      down: TrendDown,
+      neutral: Minus,
+    },
+    
+    // Energy & Resources (Carbivio specific)
+    energy: {
+      fuel: GasPump,
+      battery: Lightning,
+      oil: Drop,
+      charging: BatteryCharging,
+      full: BatteryFull,
+      empty: BatteryEmpty,
+    },
+    
+    // Business & Finance
+    business: {
+      revenue: CurrencyDollar,
+      profit: TrendUp,
+      loss: TrendDown,
+      sales: ChartBar,
+      customers: Users,
+    },
+    
+    // Communication
+    communication: {
+      phone: Phone,
+      email: Envelope,
+      chat: ChatDots,
+      notify: Bell,
+    },
+    
+    // Files & Media
+    media: {
+      image: Image,
+      document: FileText,
+      folder: Folder,
+      folderOpen: FolderOpen,
+      play: Play,
+      pause: Pause,
+    },
+    
+    // User & Authentication
+    user: {
+      profile: User,
+      group: UsersThree,
+      login: UserCircle,
+      logout: SignOut,
+      register: UserPlus,
+    },
+    
+    // Transportation
+    transport: {
+      car: Car,
+      truck: Truck,
+      airplane: Airplane,
+      ship: Ship,
+      train: Train,
+    },
+    
+    // Shopping & Commerce
+    commerce: {
+      cart: ShoppingCart,
+      store: Storefront,
+      package: Package,
+      product: Tag,
+      receipt: Receipt,
+    },
+    
+    // Time & Calendar
+    time: {
+      clock: Clock,
+      calendar: Calendar,
+      today: CalendarCheck,
+      date: CalendarBlank,
+    },
+    
+    // System
+    system: {
+      settings: Gear,
+      power: Power,
+      lock: Lock,
+      unlock: Unlock,
+      security: Shield,
+      admin: GearSix,
+    },
+    
+    // Export all icons for direct access
+    ChartLine,
+    Truck,
+    Users,
+    MapPin,
+    Package,
+    ChartBar,
+    Gear,
+    CaretLeft,
+    CaretRight,
+    CaretDown,
+    CaretUp,
+    House,
+    MagnifyingGlass,
+    Bell,
+    Eye,
+    ArrowRight,
+    ArrowLeft,
+    ArrowUp,
+    ArrowDown,
+    Plus,
+    Minus,
+    X,
+    Check,
+    PencilSimple,
+    Trash,
+    Download,
+    Upload,
+    DotsThree,
+    DotsSix,
+    TrendUp,
+    TrendDown,
+    Circle,
+    Square,
+    Triangle,
+    Star,
+    Heart,
+    Warning,
+    Info,
+    CheckCircle,
+    XCircle,
+    Clock,
+    Calendar,
+    GasPump,
+    Lightning,
+    Drop,
+    BatteryCharging,
+    BatteryFull,
+    BatteryEmpty,
+    Flame,
+    Sun,
+    Moon,
+    CurrencyDollar,
+    CurrencyEuro,
+    CurrencyBtc,
+    CreditCard,
+    Wallet,
+    PiggyBank,
+    ChartPie,
+    ChartLineUp,
+    ChartLineDown,
+    Phone,
+    Envelope,
+    ChatCircle,
+    ChatDots,
+    SpeakerHigh,
+    SpeakerSlash,
+    Microphone,
+    MicrophoneSlash,
+    Image,
+    File,
+    Folder,
+    FolderOpen,
+    FileText,
+    FilePdf,
+    FileZip,
+    Play,
+    Pause,
+    Stop,
+    GearSix,
+    Power,
+    Lock,
+    Unlock,
+    Key,
+    Shield,
+    Flag,
+    Bookmark,
+    ShareNetwork,
+    User,
+    UsersThree,
+    UserCircle,
+    UserPlus,
+    UserMinus,
+    HandWaving,
+    ThumbsUp,
+    ThumbsDown,
+    Car,
+    Airplane,
+    Train,
+    Ship,
+    Bicycle,
+    Motorcycle,
+    ShoppingCart,
+    Storefront,
+    Box,
+    Tag,
+    Barcode,
+    Receipt,
+    MapTrifold,
+    Compass,
+    NavigationArrow,
+    Signpost,
+    ClockClockwise,
+    ClockCounterClockwise,
+    CalendarBlank,
+    CalendarCheck,
+    Cloud,
+    CloudRain,
+    CloudSun,
+    Snowflake,
+    Tree,
+    Leaf,
+    Hash,
+    At,
+    Hashtag,
+    Link,
+    LinkBreak,
+    Copy,
+    Scissors,
+    Eraser,
+  };
+}
+
+/**
+ * Export des icônes les plus courantes pour un accès rapide
+ */
+export const icons = {
+  // Navigation
+  Home: House,
+  Dashboard: ChartLine,
+  Settings: Gear,
+  Users: Users,
+  Truck: Truck,
+  Package: Package,
+  
+  // Actions
+  Search: MagnifyingGlass,
+  Bell: Bell,
+  Eye: Eye,
+  Plus: Plus,
+  Edit: PencilSimple,
+  Trash: Trash,
+  More: DotsThree,
+  
+  // Status
+  Check: Check,
+  X: X,
+  Warning: Warning,
+  Info: Info,
+  
+  // Trends
+  TrendUp: TrendUp,
+  TrendDown: TrendDown,
+  
+  // Carbivio specific
+  Fuel: GasPump,
+  Battery: Lightning,
+  Oil: Drop,
+  Money: CurrencyDollar,
+};
+
+/**
+ * Règle d'or pour les icônes dans le projet Carbivio :
+ * 
+ * TOUJOURS utiliser les icônes Phosphor (@phosphor-icons/react)
+ * JAMAIS utiliser les icônes Lucide (lucide-react)
+ * 
+ * Pour vérifier si une icône existe : https://phosphoricons.com/
+ * 
+ * @example
+ * // CORRECT - Utiliser Phosphor Icons
+ * import { Truck } from "@phosphor-icons/react";
+ * 
+ * // INCORRECT - Ne pas utiliser Lucide Icons
+ * import { Truck } from "lucide-react";
+ */
+export const ICON_RULE = {
+  library: "@phosphor-icons/react",
+  forbidden: "lucide-react",
+  rule: "TOUJOURS utiliser les icônes Phosphor dans tout le projet Carbivio",
+  checkUrl: "https://phosphoricons.com/",
+};

@@ -485,7 +485,7 @@ export default function HomePage() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-[#eca226] text-[#eca226] font-semibold hover:bg-[#eca226] hover:text-black transition-all"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-[#eca226] text-[#eca226] font-semibold hover:bg-[#eca226] hover:text-white transition-all"
             >
               Contacter le support <ArrowRight className="h-4 w-4" />
             </Link>

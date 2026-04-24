@@ -1,18 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  Search, 
-  Filter, 
-  Download, 
-  Eye, 
-  Mail, 
-  Phone, 
+import {
+  Search,
+  Download,
+  Eye,
+  Mail,
+  Phone,
   MapPin,
-  Calendar,
   TrendingUp,
   User,
-  Star
+  Star,
 } from "lucide-react";
 
 interface Customer {
@@ -36,7 +34,9 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
 
   useEffect(() => {
     loadCustomers();
@@ -45,7 +45,7 @@ export default function CustomersPage() {
   const loadCustomers = async () => {
     try {
       setLoading(true);
-      
+
       // Simuler des données clients
       const mockCustomers: Customer[] = [
         {
@@ -57,11 +57,15 @@ export default function CustomersPage() {
           totalOrders: 15,
           totalSpent: 450000,
           averageOrderValue: 30000,
-          lastOrderDate: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          registrationDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+          lastOrderDate: new Date(
+            Date.now() - 2 * 60 * 60 * 1000,
+          ).toISOString(),
+          registrationDate: new Date(
+            Date.now() - 90 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
           status: "vip",
           loyaltyPoints: 1250,
-          preferredServices: ["Livraison d'essence", "Vidange"]
+          preferredServices: ["Livraison d'essence", "Vidange"],
         },
         {
           id: "2",
@@ -72,11 +76,15 @@ export default function CustomersPage() {
           totalOrders: 8,
           totalSpent: 280000,
           averageOrderValue: 35000,
-          lastOrderDate: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          registrationDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+          lastOrderDate: new Date(
+            Date.now() - 4 * 60 * 60 * 1000,
+          ).toISOString(),
+          registrationDate: new Date(
+            Date.now() - 60 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
           status: "active",
           loyaltyPoints: 560,
-          preferredServices: ["Vidange", "Réparation pneu"]
+          preferredServices: ["Vidange", "Réparation pneu"],
         },
         {
           id: "3",
@@ -87,11 +95,15 @@ export default function CustomersPage() {
           totalOrders: 3,
           totalSpent: 75000,
           averageOrderValue: 25000,
-          lastOrderDate: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-          registrationDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+          lastOrderDate: new Date(
+            Date.now() - 6 * 60 * 60 * 1000,
+          ).toISOString(),
+          registrationDate: new Date(
+            Date.now() - 30 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
           status: "active",
           loyaltyPoints: 180,
-          preferredServices: ["Réparation pneu", "Batterie"]
+          preferredServices: ["Réparation pneu", "Batterie"],
         },
         {
           id: "4",
@@ -102,11 +114,15 @@ export default function CustomersPage() {
           totalOrders: 12,
           totalSpent: 380000,
           averageOrderValue: 31667,
-          lastOrderDate: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-          registrationDate: new Date(Date.now() - 120 * 24 * 60 * 60 * 1000).toISOString(),
+          lastOrderDate: new Date(
+            Date.now() - 8 * 60 * 60 * 1000,
+          ).toISOString(),
+          registrationDate: new Date(
+            Date.now() - 120 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
           status: "active",
           loyaltyPoints: 920,
-          preferredServices: ["Batterie", "Diagnostic"]
+          preferredServices: ["Batterie", "Diagnostic"],
         },
         {
           id: "5",
@@ -117,11 +133,15 @@ export default function CustomersPage() {
           totalOrders: 6,
           totalSpent: 180000,
           averageOrderValue: 30000,
-          lastOrderDate: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-          registrationDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+          lastOrderDate: new Date(
+            Date.now() - 12 * 60 * 60 * 1000,
+          ).toISOString(),
+          registrationDate: new Date(
+            Date.now() - 45 * 24 * 60 * 60 * 1000,
+          ).toISOString(),
           status: "active",
           loyaltyPoints: 420,
-          preferredServices: ["Livraison d'essence"]
+          preferredServices: ["Livraison d'essence"],
         },
         {
           id: "6",
@@ -132,12 +152,16 @@ export default function CustomersPage() {
           totalOrders: 1,
           totalSpent: 20000,
           averageOrderValue: 20000,
-          lastOrderDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-          registrationDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          lastOrderDate: new Date(
+            Date.now() - 24 * 60 * 60 * 1000,
+          ).toISOString(),
+          registrationDate: new Date(
+            Date.now() - 24 * 60 * 60 * 1000,
+          ).toISOString(),
           status: "inactive",
           loyaltyPoints: 50,
-          preferredServices: ["Diagnostic"]
-        }
+          preferredServices: ["Diagnostic"],
+        },
       ];
 
       setCustomers(mockCustomers);
@@ -150,27 +174,37 @@ export default function CustomersPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "vip": return "text-[#eca226] bg-[#eca226]/10";
-      case "active": return "text-green-500 bg-green-500/10";
-      case "inactive": return "text-gray-500 bg-gray-500/10";
-      default: return "text-gray-500 bg-gray-500/10";
+      case "vip":
+        return "text-[#eca226] bg-[#eca226]/10";
+      case "active":
+        return "text-green-500 bg-green-500/10";
+      case "inactive":
+        return "text-gray-500 bg-gray-500/10";
+      default:
+        return "text-gray-500 bg-gray-500/10";
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case "vip": return "VIP";
-      case "active": return "Actif";
-      case "inactive": return "Inactif";
-      default: return status;
+      case "vip":
+        return "VIP";
+      case "active":
+        return "Actif";
+      case "inactive":
+        return "Inactif";
+      default:
+        return status;
     }
   };
 
-  const filteredCustomers = customers.filter(customer => {
-    const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         customer.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || customer.status === statusFilter;
+  const filteredCustomers = customers.filter((customer) => {
+    const matchesSearch =
+      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.location.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || customer.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
@@ -227,7 +261,9 @@ export default function CustomersPage() {
         <div className="bg-white/5 border border-white/10 rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-2xl font-bold text-white">{customers.length}</div>
+              <div className="text-2xl font-bold text-white numbers-idgrotesk">
+                {customers.length}
+              </div>
               <div className="text-white/60 text-sm">Total clients</div>
             </div>
             <div className="p-2 bg-blue-500/10 rounded-lg">
@@ -235,11 +271,13 @@ export default function CustomersPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white/5 border border-white/10 rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-2xl font-bold text-white">{customers.filter(c => c.status === "active").length}</div>
+              <div className="text-2xl font-bold text-white numbers-idgrotesk">
+                {customers.filter((c) => c.status === "active").length}
+              </div>
               <div className="text-white/60 text-sm">Clients actifs</div>
             </div>
             <div className="p-2 bg-green-500/10 rounded-lg">
@@ -247,11 +285,13 @@ export default function CustomersPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white/5 border border-white/10 rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-2xl font-bold text-white">{customers.filter(c => c.status === "vip").length}</div>
+              <div className="text-2xl font-bold text-white numbers-idgrotesk">
+                {customers.filter((c) => c.status === "vip").length}
+              </div>
               <div className="text-white/60 text-sm">Clients VIP</div>
             </div>
             <div className="p-2 bg-[#eca226]/10 rounded-lg">
@@ -259,12 +299,16 @@ export default function CustomersPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-white/5 border border-white/10 rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-2xl font-bold text-white">
-                {Math.round(customers.reduce((sum, c) => sum + c.averageOrderValue, 0) / customers.length).toLocaleString()} FCFA
+              <div className="text-2xl font-bold text-white numbers-idgrotesk">
+                {Math.round(
+                  customers.reduce((sum, c) => sum + c.averageOrderValue, 0) /
+                    customers.length,
+                ).toLocaleString()}{" "}
+                FCFA
               </div>
               <div className="text-white/60 text-sm">Panier moyen</div>
             </div>
@@ -281,63 +325,94 @@ export default function CustomersPage() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/10">
-                <th className="text-left p-4 text-white/60 font-medium">Client</th>
-                <th className="text-left p-4 text-white/60 font-medium">Contact</th>
-                <th className="text-left p-4 text-white/60 font-medium">Localisation</th>
-                <th className="text-left p-4 text-white/60 font-medium">Commandes</th>
-                <th className="text-left p-4 text-white/60 font-medium">Dépenses</th>
-                <th className="text-left p-4 text-white/60 font-medium">Statut</th>
-                <th className="text-left p-4 text-white/60 font-medium">Dernière commande</th>
-                <th className="text-left p-4 text-white/60 font-medium">Actions</th>
+                <th className="text-left p-4 text-white/60 font-medium">
+                  Client
+                </th>
+                <th className="text-left p-4 text-white/60 font-medium">
+                  Contact
+                </th>
+                <th className="text-left p-4 text-white/60 font-medium">
+                  Localisation
+                </th>
+                <th className="text-left p-4 text-white/60 font-medium">
+                  Commandes
+                </th>
+                <th className="text-left p-4 text-white/60 font-medium">
+                  Dépenses
+                </th>
+                <th className="text-left p-4 text-white/60 font-medium">
+                  Statut
+                </th>
+                <th className="text-left p-4 text-white/60 font-medium">
+                  Dernière commande
+                </th>
+                <th className="text-left p-4 text-white/60 font-medium">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredCustomers.map((customer) => (
-                <tr key={customer.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                <tr
+                  key={customer.id}
+                  className="border-b border-white/5 hover:bg-white/5 transition-colors"
+                >
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-[#eca226]/20 rounded-full flex items-center justify-center">
-                        <span className="text-[#eca226] font-bold text-sm">
-                          {customer.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        <span className="text-[#eca226] font-bold text-sm font-idgrotesk">
+                          {customer.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()}
                         </span>
                       </div>
                       <div>
-                        <div className="text-white font-medium">{customer.name}</div>
-                        <div className="text-white/40 text-sm">Points: {customer.loyaltyPoints}</div>
+                        <div className="text-white font-medium font-idgrotesk">
+                          {customer.name}
+                        </div>
+                        <div className="text-white/40 text-sm numbers-idgrotesk">
+                          Points: {customer.loyaltyPoints}
+                        </div>
                       </div>
                     </div>
                   </td>
                   <td className="p-4">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-white text-sm">
+                      <div className="flex items-center gap-2 text-white text-sm font-idgrotesk">
                         <Mail className="w-3 h-3 text-white/40" />
                         {customer.email}
                       </div>
-                      <div className="flex items-center gap-2 text-white text-sm">
+                      <div className="flex items-center gap-2 text-white text-sm font-idgrotesk">
                         <Phone className="w-3 h-3 text-white/40" />
                         {customer.phone}
                       </div>
                     </div>
                   </td>
                   <td className="p-4">
-                    <div className="flex items-center gap-2 text-white text-sm">
+                    <div className="flex items-center gap-2 text-white text-sm font-idgrotesk">
                       <MapPin className="w-3 h-3 text-white/40" />
                       {customer.location}
                     </div>
                   </td>
                   <td className="p-4">
-                    <div className="text-white font-medium">{customer.totalOrders}</div>
-                    <div className="text-white/40 text-sm">
+                    <div className="text-white font-medium numbers-idgrotesk">
+                      {customer.totalOrders}
+                    </div>
+                    <div className="text-white/40 text-sm numbers-idgrotesk">
                       Moy: {customer.averageOrderValue.toLocaleString()} FCFA
                     </div>
                   </td>
                   <td className="p-4">
-                    <div className="text-white font-medium">
+                    <div className="text-white font-medium numbers-idgrotesk">
                       {customer.totalSpent.toLocaleString()} FCFA
                     </div>
                   </td>
                   <td className="p-4">
-                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(customer.status)}`}>
+                    <div
+                      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(customer.status)}`}
+                    >
                       {getStatusText(customer.status)}
                     </div>
                   </td>
@@ -350,7 +425,7 @@ export default function CustomersPage() {
                     </div>
                   </td>
                   <td className="p-4">
-                    <button 
+                    <button
                       onClick={() => setSelectedCustomer(customer)}
                       className="text-[#eca226] hover:text-[#d4911f] transition-colors"
                     >
@@ -370,42 +445,66 @@ export default function CustomersPage() {
           <div className="bg-[#151514] border border-white/10 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-white/10">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-white">Détails du client</h2>
-                <button 
+                <h2 className="text-xl font-semibold text-white">
+                  Détails du client
+                </h2>
+                <button
                   onClick={() => setSelectedCustomer(null)}
                   className="text-white/60 hover:text-white"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
             </div>
-            
+
             <div className="p-6 space-y-6">
               {/* Customer Info */}
               <div>
-                <h3 className="text-white font-medium mb-3">Informations personnelles</h3>
+                <h3 className="text-white font-medium mb-3">
+                  Informations personnelles
+                </h3>
                 <div className="bg-white/5 rounded-lg p-4 space-y-2">
                   <div className="flex justify-between">
                     <span className="text-white/60">Nom:</span>
-                    <span className="text-white">{selectedCustomer.name}</span>
+                    <span className="text-white font-idgrotesk">
+                      {selectedCustomer.name}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">Email:</span>
-                    <span className="text-white">{selectedCustomer.email}</span>
+                    <span className="text-white font-idgrotesk">
+                      {selectedCustomer.email}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">Téléphone:</span>
-                    <span className="text-white">{selectedCustomer.phone}</span>
+                    <span className="text-white font-idgrotesk">
+                      {selectedCustomer.phone}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">Localisation:</span>
-                    <span className="text-white">{selectedCustomer.location}</span>
+                    <span className="text-white font-idgrotesk">
+                      {selectedCustomer.location}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">Statut:</span>
-                    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedCustomer.status)}`}>
+                    <span
+                      className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedCustomer.status)}`}
+                    >
                       {getStatusText(selectedCustomer.status)}
                     </span>
                   </div>
@@ -418,33 +517,48 @@ export default function CustomersPage() {
                 <div className="bg-white/5 rounded-lg p-4 space-y-2">
                   <div className="flex justify-between">
                     <span className="text-white/60">Total commandes:</span>
-                    <span className="text-white">{selectedCustomer.totalOrders}</span>
+                    <span className="text-white numbers-idgrotesk">
+                      {selectedCustomer.totalOrders}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">Total dépensé:</span>
-                    <span className="text-white">{selectedCustomer.totalSpent.toLocaleString()} FCFA</span>
+                    <span className="text-white numbers-idgrotesk">
+                      {selectedCustomer.totalSpent.toLocaleString()} FCFA
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">Panier moyen:</span>
-                    <span className="text-white">{selectedCustomer.averageOrderValue.toLocaleString()} FCFA</span>
+                    <span className="text-white numbers-idgrotesk">
+                      {selectedCustomer.averageOrderValue.toLocaleString()} FCFA
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-white/60">Points de fidélité:</span>
-                    <span className="text-white">{selectedCustomer.loyaltyPoints}</span>
+                    <span className="text-white numbers-idgrotesk">
+                      {selectedCustomer.loyaltyPoints}
+                    </span>
                   </div>
                 </div>
               </div>
 
               {/* Preferred Services */}
               <div>
-                <h3 className="text-white font-medium mb-3">Services préférés</h3>
+                <h3 className="text-white font-medium mb-3">
+                  Services préférés
+                </h3>
                 <div className="bg-white/5 rounded-lg p-4">
                   <div className="flex flex-wrap gap-2">
-                    {selectedCustomer.preferredServices.map((service, index) => (
-                      <span key={index} className="px-3 py-1 bg-[#eca226]/10 text-[#eca226] rounded-full text-sm">
-                        {service}
-                      </span>
-                    ))}
+                    {selectedCustomer.preferredServices.map(
+                      (service, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-[#eca226]/10 text-[#eca226] rounded-full text-sm"
+                        >
+                          {service}
+                        </span>
+                      ),
+                    )}
                   </div>
                 </div>
               </div>
@@ -457,17 +571,23 @@ export default function CustomersPage() {
                     <div className="w-2 h-2 bg-[#eca226] rounded-full mt-2"></div>
                     <div>
                       <div className="text-white text-sm">Inscription</div>
-                      <div className="text-white/40 text-xs">
-                        {new Date(selectedCustomer.registrationDate).toLocaleString()}
+                      <div className="text-white/40 text-xs numbers-idgrotesk">
+                        {new Date(
+                          selectedCustomer.registrationDate,
+                        ).toLocaleString()}
                       </div>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
                     <div>
-                      <div className="text-white text-sm">Dernière commande</div>
-                      <div className="text-white/40 text-xs">
-                        {new Date(selectedCustomer.lastOrderDate).toLocaleString()}
+                      <div className="text-white text-sm">
+                        Dernière commande
+                      </div>
+                      <div className="text-white/40 text-xs numbers-idgrotesk">
+                        {new Date(
+                          selectedCustomer.lastOrderDate,
+                        ).toLocaleString()}
                       </div>
                     </div>
                   </div>

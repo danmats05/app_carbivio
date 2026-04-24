@@ -19,6 +19,13 @@ enum RequestStatus {
   COMPLETED
 }
 
+enum VehicleStatus {
+  EN_ROUTE
+  DISPONIBLE
+  MAINTENANCE
+  HORS_SERVICE
+}
+
 model User {
   id              String           @id @default(uuid())
   name            String
@@ -59,4 +66,52 @@ model AdminLog {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("admin_logs")
+}
+
+model Vehicle {
+  id                String        @id @default(uuid())
+  plaque            String        @unique
+  modele            String
+  chauffeur         String
+  statut            VehicleStatus  @default(DISPONIBLE) @map("statut")
+  localisation       String
+  carburant         Int           @default(100)
+  dernierEntretien  DateTime?     @map("dernier_entretien")
+  prochainEntretien DateTime?     @map("prochain_entretien")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  @@map("vehicles")
+}
+
+enum StockCategory {
+  FUEL
+  BATTERY
+  OIL
+  TIRE
+}
+
+enum StockStatus {
+  AVAILABLE
+  LOW
+  CRITICAL
+}
+
+model StockItem {
+  id            String         @id @default(uuid())
+  name          String
+  category      StockCategory
+  quantity      Int
+  unit          String
+  unitPrice     Int            @map("unit_price")
+  totalValue    Int            @map("total_value")
+  supplier      String
+  receivedDate  DateTime       @map("received_date")
+  location      String
+  status        StockStatus    @default(AVAILABLE)
+  lastUpdated   DateTime       @default(now()) @map("last_updated")
+  createdAt     DateTime       @default(now()) @map("created_at")
+  updatedAt     DateTime       @updatedAt @map("updated_at")
+
+  @@map("stock_items")
 }

@@ -9,6 +9,18 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Fix for select dropdown arrow margins */
+select {
+  padding-right: 2.5rem !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 0.75rem center !important;
+  background-repeat: no-repeat !important;
+  background-size: 1.5em 1.5em !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
 /* Custom rule for numbers in inputs */
 .numbers-idgrotesk input::placeholder,
 .numbers-idgrotesk input {
@@ -29,6 +41,41 @@ html {
 .numbers-idgrotesk::before,
 .numbers-idgrotesk::after {
   font-family: inherit;
+}
+
+/* GLOBAL RULE: Force numbers-idgrotesk for ALL numeric content */
+/* This ensures ALL numbers in the app use the correct font, including in external libraries */
+
+/* Target Recharts elements specifically */
+.recharts-wrapper tspan,
+.recharts-wrapper text,
+.recharts-cartesian-axis-tick,
+.recharts-tooltip-wrapper tspan,
+.recharts-tooltip-wrapper text,
+.recharts-layer tspan,
+.recharts-layer text,
+.recharts-surface tspan,
+.recharts-surface text {
+  font-family: "IDGrotesk", sans-serif !important;
+}
+
+/* Target any element that looks like a number */
+[class*="number"],
+[class*="count"],
+[class*="amount"],
+[class*="quantity"],
+[class*="value"],
+[class*="percentage"],
+[class*="price"],
+[class*="total"],
+[class*="sum"],
+[class*="metric"],
+[class*="kpi"],
+[class*="chart"] tspan,
+[class*="chart"] text,
+[class*="data"] tspan,
+[class*="data"] text {
+  font-family: "IDGrotesk", sans-serif !important;
 }
 
 /* Heuvel Grotesk font */
@@ -69,25 +116,25 @@ html {
 }
 
 @theme inline {
-  /* Brand palette officielle */
-  --color-background: #151514;
+  /* Brand palette officielle - Version améliorée avec fond noir */
+  --color-background: #000000;
   --color-foreground: #ffffff;
 
-  --color-card: #231304;
+  --color-card: #1a1a1a;
   --color-card-foreground: #ffffff;
 
-  --color-popover: #2a1605;
+  --color-popover: #262626;
   --color-popover-foreground: #ffffff;
 
   /* Orange vif — couleur primaire */
   --color-primary: #eca226;
   --color-primary-foreground: #000000;
 
-  --color-secondary: #231304;
+  --color-secondary: #1a1a1a;
   --color-secondary-foreground: #ffffff;
 
-  --color-muted: #231304;
-  --color-muted-foreground: #888888;
+  --color-muted: #262626;
+  --color-muted-foreground: #a0a0a0;
 
   --color-accent: #eca226;
   --color-accent-foreground: #000000;
@@ -95,8 +142,8 @@ html {
   --color-destructive: #ff4d4d;
   --color-destructive-foreground: #ffffff;
 
-  --color-border: #2e1a06;
-  --color-input: #1a0d02;
+  --color-border: #333333;
+  --color-input: #0d0d0d;
   --color-ring: #eca226;
 
   /* Status colors */

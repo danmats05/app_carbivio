@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const stockItems = await prisma.stockItems.findMany({
+    const stockItems = await prisma.stockItem.findMany({
       orderBy: {
         createdAt: "desc",
       },
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const newStockItem = await prisma.stockItems.create({
+    const newStockItem = await prisma.stockItem.create({
       data: {
         name: body.name,
         category: body.category,
@@ -55,7 +55,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { id, ...updateData } = body;
 
-    const updatedStockItem = await prisma.stockItems.update({
+    const updatedStockItem = await prisma.stockItem.update({
       where: { id },
       data: {
         ...updateData,
@@ -85,7 +85,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await prisma.stockItems.delete({
+    await prisma.stockItem.delete({
       where: { id },
     });
 

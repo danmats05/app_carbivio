@@ -3,6 +3,8 @@ export interface ServiceData {
   slug: string;
   title: string;
   subtitle: string;
+  heroImage: string;
+  iconImage: string;
   pricingNote?: string;
   pricingList?: {
     name: string;

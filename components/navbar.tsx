@@ -192,9 +192,9 @@ export function CarbivioNavbar({ onServiceClick }: CarbivioNavbarProps) {
   }, [mobileOpen]);
 
   const navLinks = [
-    { label: "Avantages", href: "#avantages" },
+    { label: "Avantages", href: "/#avantages" },
     { label: "À propos", href: "/about" },
-    { label: "FAQ", href: "#faq" },
+    { label: "FAQ", href: "/#faq" },
     { label: "Contact", href: "/contact" },
   ];
 

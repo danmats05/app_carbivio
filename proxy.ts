@@ -1,16 +1,32 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyToken } from "./services/auth";
+import { jwtVerify } from "jose";
 
-const protectedRoutes = ["/dashboard", "/admin"];
+const encodedSecret = process.env.JWT_SECRET
+  ? new TextEncoder().encode(process.env.JWT_SECRET)
+  : null;
+
+async function verifyToken(token: string) {
+  if (!encodedSecret) return null;
+  try {
+    const { payload } = await jwtVerify(token, encodedSecret);
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+const protectedRoutes = ["/admin", "/client", "/driver"];
 const adminRoutes = ["/admin"];
-const publicOnlyRoutes = ["/login", "/register"];
+const driverRoutes = ["/driver"];
+const publicOnlyRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
 
 export default async function proxy(req: NextRequest) {
   const path = req.nextUrl.pathname;
 
   const isProtected = protectedRoutes.some((route) => path.startsWith(route));
   const isAdminRoute = adminRoutes.some((route) => path.startsWith(route));
+  const isDriverRoute = driverRoutes.some((route) => path.startsWith(route));
   const isPublicOnly = publicOnlyRoutes.some((route) => path.startsWith(route));
 
   // Get token from cookies
@@ -31,9 +47,20 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
 
-  // Handle admin routes specifically (prevent users from accessing admin routes)
+  // Handle admin routes specifically
   if (isAdminRoute && payload?.role !== "ADMIN") {
-    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+    if (payload?.role === "DRIVER") {
+      return NextResponse.redirect(new URL("/driver", req.nextUrl));
+    }
+    return NextResponse.redirect(new URL("/client", req.nextUrl));
+  }
+
+  // Handle driver routes specifically
+  if (isDriverRoute && payload?.role !== "DRIVER") {
+    if (payload?.role === "ADMIN") {
+      return NextResponse.redirect(new URL("/admin", req.nextUrl));
+    }
+    return NextResponse.redirect(new URL("/client", req.nextUrl));
   }
 
   // Handle public-only routes (login, register) for ALREADY logged in users
@@ -41,7 +68,10 @@ export default async function proxy(req: NextRequest) {
     if (payload.role === "ADMIN") {
       return NextResponse.redirect(new URL("/admin", req.nextUrl));
     }
-    return NextResponse.redirect(new URL("/dashboard", req.nextUrl));
+    if (payload.role === "DRIVER") {
+      return NextResponse.redirect(new URL("/driver", req.nextUrl));
+    }
+    return NextResponse.redirect(new URL("/client", req.nextUrl));
   }
 
   return NextResponse.next();

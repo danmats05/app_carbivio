@@ -1,24 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import Hero from "@/components/Hero";
 import RuixenBentoCards from "@/components/ui/ruixen-bento-cards";
-import {
-  ArrowRight,
-  ChevronDown,
-  Mail,
-  Facebook,
-  Instagram,
-  Phone,
-} from "lucide-react";
-import { CaretDown } from "@phosphor-icons/react";
+import { ArrowRight, ChevronDown, Mail, Facebook, Instagram, Phone } from "lucide-react";
 import { useState } from "react";
-import { useEffect } from "react";
 import { selectServiceFromHero } from "@/components/ui/ruixen-bento-cards";
-import NumberText from "@/components/ui/number-text";
 import { CarbivioTestimonialsSection } from "@/components/blocks/carbivio-testimonials";
 import { Footer } from "@/components/ui/modem-animated-footer";
+import { CarbivioNavbar } from "@/components/navbar";
 
 // FAQ Accordion Component
 function FAQAccordion({
@@ -59,153 +49,18 @@ function FAQAccordion({
 }
 
 export default function HomePage() {
-  const [isServicesMenuOpen, setIsServicesMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        // Scroll vers le bas - cacher la navbar
-        setIsVisible(false);
-      } else {
-        // Scroll vers le haut - montrer la navbar
-        setIsVisible(true);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
-  const services = [
-    { name: "Carburant" },
-    { name: "Batterie" },
-    { name: "Huile moteur" },
-    { name: "Pneus" },
-    { name: "Urgence" },
-  ];
-
   const handleServiceSelect = (serviceName: string) => {
-    setIsServicesMenuOpen(false);
     selectServiceFromHero(serviceName);
-
-    // Scroll vers la section des cartes
     setTimeout(() => {
-      const cardsSection = document.querySelector(
-        '[data-section="ruixen-cards"]',
-      );
+      const cardsSection = document.querySelector('[data-section="ruixen-cards"]');
       cardsSection?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 300);
   };
 
   return (
-    <div
-      className="min-h-screen bg-[#151514] text-white overflow-x-hidden"
-      onClick={() => setIsServicesMenuOpen(false)}
-    >
+    <div className="min-h-screen bg-[#151514] text-white overflow-x-hidden">
       {/* ─── NAV ─── */}
-      <nav
-        className={`fixed top-8 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl transition-all duration-500 ease-in-out ${
-          isVisible
-            ? "translate-y-0 opacity-100"
-            : "-translate-y-full opacity-0"
-        }`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-5 py-3.5 rounded-full bg-white/[0.07] backdrop-blur-2xl  shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <Image
-              src="/navbar-logo.png"
-              alt="Carbivio"
-              width={120}
-              height={120}
-              className="object-contain"
-            />
-          </div>
-
-          {/* Links (desktop) - Centered */}
-          <div className="hidden md:flex items-center gap-6 text-sm text-white/60 absolute left-1/2 -translate-x-1/2">
-            {/* Services dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setIsServicesMenuOpen(!isServicesMenuOpen)}
-                className="flex items-center gap-1 hover:text-white transition-colors"
-              >
-                Services
-                <CaretDown
-                  className={`h-4 w-4 transition-transform ${isServicesMenuOpen ? "rotate-180" : ""}`}
-                  weight="duotone"
-                />
-              </button>
-
-              {/* Dropdown menu */}
-              {isServicesMenuOpen && (
-                <div
-                  className="absolute top-full left-0 mt-2 w-48 rounded-xl bg-[#151514] shadow-[0_8px_32px_rgba(0,0,0,0.8)] py-2 z-50"
-                  style={{ backdropFilter: "blur(20px)" }}
-                >
-                  {services.map((service) => (
-                    <button
-                      key={service.name}
-                      onClick={() => handleServiceSelect(service.name)}
-                      className="block w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-[#eca226]/20 transition-colors"
-                    >
-                      {service.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <a
-              href="#avantages"
-              className="hover:text-white transition-colors scroll-smooth"
-            >
-              Avantages
-            </a>
-            <Link href="/about" className="hover:text-white transition-colors">
-              À propos de nous
-            </Link>
-            <a
-              href="#faq"
-              className="hover:text-white transition-colors scroll-smooth"
-            >
-              FAQ
-            </a>
-            <Link
-              href="/contact"
-              className="hover:text-white transition-colors"
-            >
-              Contact
-            </Link>
-          </div>
-
-          {/* Menu */}
-          <div className="hidden md:flex items-center gap-8"></div>
-
-          {/* CTAs */}
-          <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="px-4 py-2 text-sm font-medium text-white/70 hover:text-white transition-colors"
-            >
-              Connexion
-            </Link>
-            <Link
-              href="/register"
-              className="px-4 py-2 rounded-full bg-[#eca226] text-black font-bold text-sm hover:bg-[#d4911f] transition-all shadow-[0_0_20px_rgba(236,162,38,0.3)]"
-            >
-              Commencer
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <CarbivioNavbar onServiceClick={handleServiceSelect} />
 
       {/* ─── HERO ─── */}
       <Hero />
@@ -223,18 +78,10 @@ export default function HomePage() {
 
         <div className="relative z-10 max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="font-special-gothic text-6xl sm:text-7xl lg:text-8xl text-white leading-tight mb-8">
+            <h2 className="font-special-gothic text-4xl sm:text-6xl lg:text-8xl text-white leading-tight mb-8">
               Pourquoi
               <br />
-              <span className="relative inline-block">
-                <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-[#eca226] to-[#d4911f] drop-shadow-[0_0_30px_rgba(236,162,38,0.5)]">
-                  CARBIVIO ?
-                </span>
-                {/* Effet d'ombre derrière CARBIVIO */}
-                <span className="absolute inset-0 text-black/50 blur-[2px] transform translate-x-1 translate-y-1 z-0">
-                  CARBIVIO ?
-                </span>
-              </span>
+              <span className="text-[#eca226]">CARBIVIO ?</span>
             </h2>
             <p className="font-montserrat text-white/60 text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed">
               Découvrez pourquoi des milliers de conducteurs nous font confiance
@@ -351,12 +198,12 @@ export default function HomePage() {
               >
                 Créer un compte gratuit <ArrowRight className="h-5 w-5" />
               </Link>
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-full border-2 border-white/20 text-white font-bold text-lg hover:border-white/40 hover:bg-white/10 transition-all"
+              <a
+                href="#services"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-full border-2 border-white/20 text-white font-bold text-lg hover:border-white/40 hover:bg-white/10 transition-all scroll-smooth"
               >
                 Voir les services <ArrowRight className="h-5 w-5" />
-              </Link>
+              </a>
             </div>
             <p className="text-white/20 text-sm mt-4">
               Déjà inscrit ?{" "}
@@ -532,8 +379,9 @@ export default function HomePage() {
           { label: "Contact", href: "/contact" },
           { label: "À propos de nous", href: "/about" },
         ]}
-        creatorName="Avento"
-        creatorUrl="https://avento-agency.com"
+        creatorName="DJ"
+        creatorUrl="https://danjoris.com"
+        creatorLogo="/dj-logo.png"
         brandIcon={
           <div className="w-full h-full flex items-center justify-center">
             <span className="font-bold text-black text-2xl">C</span>

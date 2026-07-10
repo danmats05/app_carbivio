@@ -20,11 +20,6 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "Carbivio SaaS",
   description: "Professional SaaS Platform",
-  icons: {
-    icon: "/vraifav.png",
-    shortcut: "/vraifav.png",
-    apple: "/vraifav.png",
-  },
 };
 
 export default function RootLayout({
@@ -34,10 +29,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <head>
-        <link rel="icon" href="/vraifav.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/vraifav.png" />
-      </head>
       <body
         className={`${inter.variable} ${montserrat.variable} font-sans antialiased`}
       >

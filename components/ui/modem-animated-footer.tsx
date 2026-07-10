@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   NotepadTextDashed,
   Twitter,
@@ -28,6 +29,7 @@ interface FooterProps {
   navLinks?: FooterLink[];
   creatorName?: string;
   creatorUrl?: string;
+  creatorLogo?: string;
   brandIcon?: React.ReactNode;
   className?: string;
 }
@@ -39,6 +41,7 @@ export const Footer = ({
   navLinks = [],
   creatorName,
   creatorUrl,
+  creatorLogo,
   brandIcon,
   className,
 }: FooterProps) => {
@@ -49,11 +52,6 @@ export const Footer = ({
           <div className="flex flex-col mb-12 sm:mb-20 md:mb-0 w-full">
             <div className="w-full flex flex-col items-center">
               <div className="space-y-2 flex flex-col items-center flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-card-foreground text-3xl font-bold">
-                    {brandName}
-                  </span>
-                </div>
                 <p className="text-muted-foreground font-semibold text-center w-full max-w-sm sm:w-96 px-4 sm:px-0">
                   {brandDescription}
                 </p>
@@ -102,14 +100,25 @@ export const Footer = ({
               </span>{" "}
               {brandName}. Tous droits réservés.
             </p>
-            {creatorName && creatorUrl && (
+            {creatorUrl && (creatorName || creatorLogo) && (
               <nav className="flex gap-4">
                 <Link
                   href={creatorUrl}
                   target="_blank"
-                  className="text-base text-muted-foreground hover:text-foreground transition-colors duration-300 hover:font-medium"
+                  className="group flex items-center gap-1 text-base text-muted-foreground"
                 >
-                  Créé par {creatorName}
+                  <span>Par</span>
+                  {creatorLogo ? (
+                    <Image
+                      src={creatorLogo}
+                      alt={creatorName ?? "Creator"}
+                      width={80}
+                      height={28}
+                      className="h-7 w-auto object-contain opacity-40 group-hover:opacity-100 transition-opacity duration-300"
+                    />
+                  ) : (
+                    <span className="hover:font-medium">{creatorName}</span>
+                  )}
                 </Link>
               </nav>
             )}
@@ -120,7 +129,7 @@ export const Footer = ({
         <div
           className="bg-gradient-to-b from-foreground/20 via-foreground/10 to-transparent bg-clip-text text-transparent leading-none absolute left-1/2 -translate-x-1/2 bottom-40 md:bottom-32 font-extrabold tracking-tighter pointer-events-none select-none text-center px-4"
           style={{
-            fontSize: "clamp(3rem, 12vw, 10rem)",
+            fontSize: "clamp(5rem, 20vw, 16rem)",
             maxWidth: "95vw",
           }}
         >

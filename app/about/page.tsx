@@ -8,165 +8,65 @@ import {
   Lightning,
   Users,
   Trophy,
-  CaretDown,
   Envelope,
   FacebookLogo,
   InstagramLogo,
   Phone,
 } from "@phosphor-icons/react";
-import { ArrowLeft as ArrowLeftPhosphor } from "@phosphor-icons/react";
-import { useState } from "react";
-import { useEffect } from "react";
+import { ExpandingCards, CardItem } from "@/components/ui/expanding-cards";
 import { Footer } from "@/components/ui/modem-animated-footer";
 import { BackgroundPlus } from "@/components/ui/background-plus";
+import { CarbivioNavbar } from "@/components/navbar";
+
+const valuesData: CardItem[] = [
+  {
+    id: "mission",
+    title: "Mission",
+    description:
+      "Transformer les idées complexes en solutions simples et efficaces qui créent de la valeur réelle.",
+    imgSrc: "/Mission.png",
+    icon: <Target className="w-6 h-6" weight="duotone" />,
+    linkHref: "#",
+  },
+  {
+    id: "innovation",
+    title: "Innovation",
+    description:
+      "Explorer constamment de nouvelles technologies et approches pour rester à la pointe du progrès.",
+    imgSrc: "/Innovation.png",
+    icon: <Lightning className="w-6 h-6" weight="duotone" />,
+    linkHref: "#",
+  },
+  {
+    id: "collaboration",
+    title: "Collaboration",
+    description:
+      "Travailler main dans la main avec nos clients pour atteindre ensemble des objectifs exceptionnels.",
+    imgSrc: "/Collaboration.png",
+    icon: <Users className="w-6 h-6" weight="duotone" />,
+    linkHref: "#",
+  },
+  {
+    id: "excellence",
+    title: "Excellence",
+    description:
+      "Ne jamais compromettre la qualité et toujours viser le meilleur dans tout ce que nous entreprenons.",
+    imgSrc: "/Succes.png",
+    icon: <Trophy className="w-6 h-6" weight="duotone" />,
+    linkHref: "#",
+  },
+];
 
 export default function AboutPage() {
-  const [isServicesMenuOpen, setIsServicesMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const router = useRouter();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      console.log("Scroll Y:", currentScrollY, "Last Y:", lastScrollY); // Debug
-
-      if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        // Scroll vers le bas - cacher la navbar
-        setIsVisible(false);
-        console.log("Cacher navbar");
-      } else {
-        // Scroll vers le haut - montrer la navbar
-        setIsVisible(true);
-        console.log("Montrer navbar");
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
-  const services = [
-    { name: "Carburant" },
-    { name: "Batterie" },
-    { name: "Pneus" },
-    { name: "Entretien" },
-    { name: "Urgence" },
-  ];
-
-  const handleServiceSelect = (serviceName: string) => {
-    setIsServicesMenuOpen(false);
-    router.push(`/?service=${serviceName}`);
-  };
-
   return (
-    <div
-      className="bg-[#151514] text-white overflow-x-hidden"
-      onClick={() => setIsServicesMenuOpen(false)}
-    >
+    <div className="bg-black text-white overflow-x-hidden">
       {/* ─── NAV ─── */}
-      <nav
-        className={`fixed top-8 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl transition-all duration-500 ease-in-out ${
-          isVisible
-            ? "translate-y-0 opacity-100"
-            : "-translate-y-full opacity-0"
-        }`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-5 py-3.5 rounded-full bg-white/[0.07] backdrop-blur-2xl  shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <Image
-              src="/navbar-logo.png"
-              alt="Carbivio"
-              width={120}
-              height={120}
-              className="object-contain"
-            />
-          </div>
-
-          {/* Links (desktop) - Centered */}
-          <div className="hidden md:flex items-center gap-6 text-sm text-white/60 absolute left-1/2 -translate-x-1/2">
-            {/* Services dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setIsServicesMenuOpen(!isServicesMenuOpen)}
-                className="flex items-center gap-1 hover:text-white transition-colors"
-              >
-                Services
-                <CaretDown
-                  className={`h-4 w-4 transition-transform ${isServicesMenuOpen ? "rotate-180" : ""}`}
-                  weight="duotone"
-                />
-              </button>
-
-              {/* Dropdown menu */}
-              {isServicesMenuOpen && (
-                <div
-                  className="absolute top-full left-0 mt-2 w-48 rounded-xl bg-[#151514] shadow-[0_8px_32px_rgba(0,0,0,0.8)] py-2 z-50"
-                  style={{ backdropFilter: "blur(20px)" }}
-                >
-                  {services.map((service) => (
-                    <button
-                      key={service.name}
-                      onClick={() => handleServiceSelect(service.name)}
-                      className="block w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-[#eca226]/20 transition-colors"
-                    >
-                      {service.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <Link
-              href="/#avantages"
-              className="hover:text-white transition-colors scroll-smooth"
-            >
-              Avantages
-            </Link>
-            <Link href="/about" className="hover:text-white transition-colors">
-              À propos de nous
-            </Link>
-            <Link
-              href="/#faq"
-              className="hover:text-white transition-colors scroll-smooth"
-            >
-              FAQ
-            </Link>
-            <Link
-              href="/contact"
-              className="hover:text-white transition-colors"
-            >
-              Contact
-            </Link>
-          </div>
-
-          {/* Menu */}
-          <div className="hidden md:flex items-center gap-8"></div>
-
-          {/* CTAs */}
-          <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="px-4 py-2 text-sm font-medium text-white/70 hover:text-white transition-colors"
-            >
-              Connexion
-            </Link>
-            <Link
-              href="/register"
-              className="px-4 py-2 rounded-full bg-[#eca226] text-black font-bold text-sm hover:bg-[#d4911f] transition-all shadow-[0_0_20px_rgba(236,162,38,0.3)]"
-            >
-              Commencer
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <CarbivioNavbar onServiceClick={(service) => router.push(`/?service=${service}`)} />
 
       {/* ─── HERO SECTION ─── */}
-      <section className="pt-32 pb-20 px-6 relative overflow-hidden">
+      <section className="pt-40 pb-20 px-6 relative overflow-hidden">
         <BackgroundPlus
           plusColor="#eca226"
           backgroundColor="transparent"
@@ -175,7 +75,7 @@ export default function AboutPage() {
         />
         <div className="relative max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+            <h1 className="font-special-gothic text-5xl md:text-7xl text-white leading-tight mb-6">
               À Propos de Carbivio
             </h1>
             <p className="text-xl text-white/70 max-w-3xl mx-auto leading-relaxed">
@@ -183,28 +83,12 @@ export default function AboutPage() {
               exceptionnelles qui transforment les idées en réalité.
             </p>
           </div>
-
-          {/* Back to home button */}
-          <div className="fixed top-6 left-6 z-50">
-            <Link
-              href="/"
-              className="group flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed border-[#ff8c00]/50 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-[#eca226]/50 transition-all duration-300"
-            >
-              <ArrowLeftPhosphor
-                className="w-5 h-5 text-[#eca226] group-hover:text-[#d4911f] transition-colors duration-300"
-                weight="duotone"
-              />
-              <span className="text-white/80 group-hover:text-white text-sm font-medium transition-colors duration-300">
-                Accueil
-              </span>
-            </Link>
-          </div>
         </div>
       </section>
 
       {/* ─── SEPARATOR ─── */}
       <div className="max-w-7xl mx-auto px-6">
-        <div className="h-px bg-gradient-to-r from-transparent via-[#eca226] to-transparent opacity-50"></div>
+        <div className="h-px bg-linear-to-r from-transparent via-[#eca226] to-transparent opacity-50"></div>
       </div>
 
       {/* ─── STORY SECTION ─── */}
@@ -226,7 +110,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#eca226]/20 to-transparent rounded-2xl"></div>
+              <div className="absolute inset-0 bg-linear-to-r from-[#eca226]/20 to-transparent rounded-2xl"></div>
               <div className="relative rounded-2xl overflow-hidden">
                 <Image
                   src="/Camion-orange.png"
@@ -242,187 +126,17 @@ export default function AboutPage() {
       </section>
 
       {/* ─── VALUES SECTION ─── */}
-      <section id="values" className="py-0 px-0 h-screen">
-        <div className="w-full">
-          <div className="text-center mb-16 pt-20">
+      <section id="values" className="py-20 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">Nos Valeurs</h2>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 h-[calc(100vh-5rem)]">
-            {/* Mission Card */}
-            <div className="relative group overflow-hidden border-2 border-dashed border-[#ff8c00]/50 bg-white/5 backdrop-blur-sm hover:border-[#eca226]/50 transition-all duration-500 cursor-pointer border-r-0">
-              {/* Text Content - Visible by default */}
-              <div className="absolute inset-0 p-8 flex flex-col justify-center z-10 opacity-100 group-hover:opacity-0 transition-opacity duration-500">
-                <div className="w-16 h-16 rounded-lg border-2 border-dashed border-[#ff8c00]/50 flex items-center justify-center mb-6 group-hover:border-[#eca226]/50 transition-colors duration-300">
-                  <Target className="w-8 h-8 text-[#eca226]" weight="duotone" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3">Mission</h3>
-                <p className="text-white/70 leading-relaxed text-sm">
-                  Transformer les idées complexes en solutions simples et
-                  efficaces qui créent de la valeur réelle.
-                </p>
-              </div>
-
-              {/* Image Content - Visible on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <div className="w-full h-full relative">
-                  <Image
-                    src="/Mission.png"
-                    alt="Mission"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#eca226]/30 to-[#d4911f]/30 flex items-end justify-start p-8">
-                    <div className="text-left">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Target
-                          className="w-6 h-6 text-white"
-                          weight="duotone"
-                        />
-                        <h3 className="text-2xl font-bold text-white">
-                          Mission
-                        </h3>
-                      </div>
-                      <p className="text-white/90 text-sm max-w-xs">
-                        Excellence et innovation au cœur de notre démarche
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Innovation Card */}
-            <div className="relative group overflow-hidden border-2 border-dashed border-[#ff8c00]/50 bg-white/5 backdrop-blur-sm hover:border-[#eca226]/50 transition-all duration-500 cursor-pointer border-r-0">
-              {/* Text Content - Visible by default */}
-              <div className="absolute inset-0 p-8 flex flex-col justify-center z-10 opacity-100 group-hover:opacity-0 transition-opacity duration-500">
-                <div className="w-16 h-16 rounded-lg border-2 border-dashed border-[#ff8c00]/50 flex items-center justify-center mb-6 group-hover:border-[#eca226]/50 transition-colors duration-300">
-                  <Lightning
-                    className="w-8 h-8 text-[#eca226]"
-                    weight="duotone"
-                  />
-                </div>
-                <h3 className="text-xl font-semibold mb-3">Innovation</h3>
-                <p className="text-white/70 leading-relaxed text-sm">
-                  Explorer constamment de nouvelles technologies et approches
-                  pour rester à la pointe du progrès.
-                </p>
-              </div>
-
-              {/* Image Content - Visible on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <div className="w-full h-full relative">
-                  <Image
-                    src="/Innovation.png"
-                    alt="Innovation"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#eca226]/30 to-[#d4911f]/30 flex items-end justify-start p-8">
-                    <div className="text-left">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Lightning
-                          className="w-6 h-6 text-white"
-                          weight="duotone"
-                        />
-                        <h3 className="text-2xl font-bold text-white">
-                          Innovation
-                        </h3>
-                      </div>
-                      <p className="text-white/90 text-sm max-w-xs">
-                        Créativité et technologie pour un avenir meilleur
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Collaboration Card */}
-            <div className="relative group overflow-hidden border-2 border-dashed border-[#ff8c00]/50 bg-white/5 backdrop-blur-sm hover:border-[#eca226]/50 transition-all duration-500 cursor-pointer border-r-0">
-              {/* Text Content - Visible by default */}
-              <div className="absolute inset-0 p-8 flex flex-col justify-center z-10 opacity-100 group-hover:opacity-0 transition-opacity duration-500">
-                <div className="w-16 h-16 rounded-lg border-2 border-dashed border-[#ff8c00]/50 flex items-center justify-center mb-6 group-hover:border-[#eca226]/50 transition-colors duration-300">
-                  <Users className="w-8 h-8 text-[#eca226]" weight="duotone" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3">Collaboration</h3>
-                <p className="text-white/70 leading-relaxed text-sm">
-                  Travailler main dans la main avec nos clients pour atteindre
-                  ensemble des objectifs exceptionnels.
-                </p>
-              </div>
-
-              {/* Image Content - Visible on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <div className="w-full h-full relative">
-                  <Image
-                    src="/Collaboration.png"
-                    alt="Collaboration"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#eca226]/30 to-[#d4911f]/30 flex items-end justify-start p-8">
-                    <div className="text-left">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Users
-                          className="w-6 h-6 text-white"
-                          weight="duotone"
-                        />
-                        <h3 className="text-2xl font-bold text-white">
-                          Collaboration
-                        </h3>
-                      </div>
-                      <p className="text-white/90 text-sm max-w-xs">
-                        Union des talents pour des résultats exceptionnels
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Excellence Card */}
-            <div className="relative group overflow-hidden border-2 border-dashed border-[#ff8c00]/50 bg-white/5 backdrop-blur-sm hover:border-[#eca226]/50 transition-all duration-500 cursor-pointer">
-              {/* Text Content - Visible by default */}
-              <div className="absolute inset-0 p-8 flex flex-col justify-center z-10 opacity-100 group-hover:opacity-0 transition-opacity duration-500">
-                <div className="w-16 h-16 rounded-lg border-2 border-dashed border-[#ff8c00]/50 flex items-center justify-center mb-6 group-hover:border-[#eca226]/50 transition-colors duration-300">
-                  <Trophy className="w-8 h-8 text-[#eca226]" weight="duotone" />
-                </div>
-                <h3 className="text-xl font-semibold mb-3">Excellence</h3>
-                <p className="text-white/70 leading-relaxed text-sm">
-                  Ne jamais compromettre la qualité et toujours viser le
-                  meilleur dans tout ce que nous entreprenons.
-                </p>
-              </div>
-
-              {/* Image Content - Visible on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <div className="w-full h-full relative">
-                  <Image
-                    src="/Succes.png"
-                    alt="Excellence"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#eca226]/30 to-[#d4911f]/30 flex items-end justify-start p-8">
-                    <div className="text-left">
-                      <div className="flex items-center gap-3 mb-2">
-                        <Trophy
-                          className="w-6 h-6 text-white"
-                          weight="duotone"
-                        />
-                        <h3 className="text-2xl font-bold text-white">
-                          Excellence
-                        </h3>
-                      </div>
-                      <p className="text-white/90 text-sm max-w-xs">
-                        Qualité irréprochable et dépassement de soi
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="flex justify-center">
+            <ExpandingCards
+              items={valuesData}
+              defaultActiveIndex={0}
+              className="w-full"
+            />
           </div>
         </div>
       </section>
@@ -466,8 +180,9 @@ export default function AboutPage() {
           { label: "Contact", href: "/contact" },
           { label: "À propos de nous", href: "/about" },
         ]}
-        creatorName="Avento"
-        creatorUrl="https://avento-agency.com"
+        creatorName="DJ"
+        creatorUrl="https://danjoris.com"
+        creatorLogo="/dj-logo.png"
         brandIcon={
           <div className="w-full h-full flex items-center justify-center">
             <span className="font-bold text-black text-2xl">C</span>

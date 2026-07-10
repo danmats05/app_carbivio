@@ -1,22 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Mail, Facebook, Instagram, Phone } from "lucide-react";
 import { Footer } from "@/components/ui/modem-animated-footer";
 import { BackgroundPlus } from "@/components/ui/background-plus";
-import NumberText from "@/components/ui/number-text";
 import {
   Phone as PhonePhosphor,
   Envelope as EnvelopePhosphor,
   MapPin as MapPinPhosphor,
   Clock as ClockPhosphor,
   PaperPlaneRight as PaperPlaneRightPhosphor,
-  ArrowLeft as ArrowLeftPhosphor,
-  CaretDown,
 } from "@phosphor-icons/react";
+import { CarbivioNavbar } from "@/components/navbar";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -28,40 +24,6 @@ export default function ContactPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [isServicesMenuOpen, setIsServicesMenuOpen] = useState(false);
-
-  const services = [
-    { name: "Carburant" },
-    { name: "Batterie" },
-    { name: "Huile moteur" },
-    { name: "Pneus" },
-    { name: "Urgence" },
-  ];
-
-  const handleServiceSelect = (serviceName: string) => {
-    setIsServicesMenuOpen(false);
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > lastScrollY && currentScrollY > 50) {
-        // Scroll vers le bas - cacher la navbar
-        setIsVisible(false);
-      } else {
-        // Scroll vers le haut - montrer la navbar
-        setIsVisible(true);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -94,126 +56,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Back to Home Button */}
-      <div
-        className={`fixed top-6 left-6 z-50 transition-all duration-500 ease-in-out ${
-          isVisible
-            ? "translate-y-0 opacity-100"
-            : "-translate-y-full opacity-0"
-        }`}
-      >
-        <Link
-          href="/"
-          className="group flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed border-[#ff8c00]/50 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-[#eca226]/50 transition-all duration-300"
-        >
-          <ArrowLeftPhosphor
-            className="w-5 h-5 text-[#eca226] group-hover:text-[#d4911f] transition-colors duration-300"
-            weight="duotone"
-          />
-          <span className="text-white/80 group-hover:text-white text-sm font-medium transition-colors duration-300">
-            Accueil
-          </span>
-        </Link>
-      </div>
-
-      {/* ─── NAV ─── */}
-      <nav
-        className={`fixed top-8 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl transition-all duration-500 ease-in-out ${
-          isVisible
-            ? "translate-y-0 opacity-100"
-            : "-translate-y-full opacity-0"
-        }`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between px-5 py-3.5 rounded-full bg-white/[0.07] backdrop-blur-2xl  shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
-          {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <Image
-              src="/navbar-logo.png"
-              alt="Carbivio"
-              width={120}
-              height={120}
-              className="object-contain"
-            />
-          </div>
-
-          {/* Links (desktop) - Centered */}
-          <div className="hidden md:flex items-center gap-6 text-sm text-white/60 absolute left-1/2 -translate-x-1/2">
-            {/* Services dropdown */}
-            <div className="relative">
-              <button
-                onClick={() => setIsServicesMenuOpen(!isServicesMenuOpen)}
-                className="flex items-center gap-1 hover:text-white transition-colors"
-              >
-                Services
-                <CaretDown
-                  className={`h-4 w-4 transition-transform ${isServicesMenuOpen ? "rotate-180" : ""}`}
-                  weight="duotone"
-                />
-              </button>
-
-              {/* Dropdown menu */}
-              {isServicesMenuOpen && (
-                <div
-                  className="absolute top-full left-0 mt-2 w-48 rounded-xl bg-[#151514] shadow-[0_8px_32px_rgba(0,0,0,0.8)] py-2 z-50"
-                  style={{ backdropFilter: "blur(20px)" }}
-                >
-                  {services.map((service) => (
-                    <button
-                      key={service.name}
-                      onClick={() => handleServiceSelect(service.name)}
-                      className="block w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-[#eca226]/20 transition-colors"
-                    >
-                      {service.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <Link
-              href="/#avantages"
-              className="hover:text-white transition-colors scroll-smooth"
-            >
-              Avantages
-            </Link>
-            <Link href="/about" className="hover:text-white transition-colors">
-              À propos de nous
-            </Link>
-            <Link
-              href="/#faq"
-              className="hover:text-white transition-colors scroll-smooth"
-            >
-              FAQ
-            </Link>
-            <Link
-              href="/contact"
-              className="hover:text-white transition-colors"
-            >
-              Contact
-            </Link>
-          </div>
-
-          {/* Menu */}
-          <div className="hidden md:flex items-center gap-8"></div>
-
-          {/* CTAs */}
-          <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="px-4 py-2 text-sm font-medium text-white/70 hover:text-white transition-colors"
-            >
-              Connexion
-            </Link>
-            <Link
-              href="/register"
-              className="px-4 py-2 rounded-full bg-[#eca226] text-black font-bold text-sm hover:bg-[#d4911f] transition-all shadow-[0_0_20px_rgba(236,162,38,0.3)]"
-            >
-              Commencer
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <CarbivioNavbar />
 
       {/* Header */}
       <div className="relative overflow-hidden">
@@ -223,7 +66,7 @@ export default function ContactPage() {
           plusSize={80}
           fade={true}
         />
-        <div className="relative max-w-7xl mx-auto px-6 py-24 lg:py-32">
+        <div className="relative max-w-7xl mx-auto px-6 pt-36 pb-16 lg:pt-44 lg:pb-24">
           <div className="text-center">
             <h1 className="font-special-gothic text-5xl sm:text-6xl lg:text-7xl text-white leading-tight mb-6">
               Contactez
@@ -886,8 +729,9 @@ export default function ContactPage() {
           { label: "Contact", href: "/contact" },
           { label: "À propos de nous", href: "/about" },
         ]}
-        creatorName="Avento"
-        creatorUrl="https://avento-agency.com"
+        creatorName="DJ"
+        creatorUrl="https://danjoris.com"
+        creatorLogo="/dj-logo.png"
         brandIcon={
           <div className="w-full h-full flex items-center justify-center">
             <span className="font-bold text-black text-2xl">C</span>

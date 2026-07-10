@@ -1,45 +1,44 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { ChevronLeft, Plus } from "lucide-react";
-import { ArrowLeft as ArrowLeftPhosphor } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
-import NumberText from "@/components/ui/number-text";
+import Link from "next/link";
+import Image from "next/image";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft as ArrowLeftPhosphor } from "@phosphor-icons/react";
+import NumberText from "@/components/ui/number-text";
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [form, setForm] = useState({ email: "", password: "" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
+
     try {
-      const res = await fetch("/api/auth/login", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(formData),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data.error || "Connexion échouée");
-        return;
-      }
 
-      // Rediriger selon le rôle
-      if (data.user.role === "ADMIN") {
-        toast.success("Connexion administrateur réussie !");
-        router.push("/admin");
+      const data = await response.json();
+
+      if (response.ok) {
+        const role = data.user?.role;
+        if (role === "ADMIN") router.push("/admin");
+        else if (role === "DRIVER") router.push("/driver");
+        else router.push("/client");
       } else {
-        toast.success("Connexion réussie !");
-        router.push("/dashboard");
+        setError(data.error || "Erreur de connexion");
       }
-    } catch {
-      toast.error("Une erreur est survenue. Veuillez réessayer.");
+    } catch (error) {
+      setError("Erreur de connexion au serveur");
     } finally {
       setIsLoading(false);
     }
@@ -47,8 +46,8 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#151514] flex">
-      {/* Panneau décoratif gauche */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+      {/* Panneau décoratif */}
+      <div className="w-1/2 relative overflow-hidden lg:flex hidden">
         <div className="absolute inset-0 bg-linear-to-br from-[#eca226]/20 via-transparent to-transparent" />
         <div className="absolute -top-40 -left-40 w-150 h-150 rounded-full bg-[#eca226]/10 blur-[120px]" />
         <div className="absolute bottom-0 right-0 w-100 h-100 rounded-full bg-[#eca226]/5 blur-[80px]" />
@@ -65,15 +64,49 @@ export default function LoginPage() {
               Accueil
             </span>
           </Link>
+
           <div>
             <h1 className="font-montserrat font-extrabold text-5xl text-white leading-tight mb-6">
-              Le carburant livré
+              Content de vous
               <br />
-              <span className="text-[#eca226]">à votre porte.</span>
+              <span className="text-[#eca226]">revoir</span>
             </h1>
             <p className="text-white/50 text-lg leading-relaxed max-w-md">
-              Gérez vos demandes de service, suivez vos livraisons et contrôlez
-              tout depuis votre tableau de bord.
+              Connectez-vous pour gérer vos véhicules et commander nos services.
+            </p>
+          </div>
+
+          {/* Témoignage */}
+          <div className="flex flex-col rounded-lg border-t bg-gradient-to-b from-muted/50 to-muted/10 p-4 text-start sm:p-6 hover:from-muted/60 hover:to-muted/20 max-w-[360px] sm:max-w-[360px] transition-colors duration-300">
+            <div className="flex items-center gap-3">
+              <div className="relative h-12 w-40 shrink-0 overflow-hidden">
+                <img
+                  alt="Thomas Martin"
+                  loading="lazy"
+                  decoding="async"
+                  data-nimg="fill"
+                  className="object-cover"
+                  style={{
+                    position: "absolute",
+                    height: "100%",
+                    width: "100%",
+                    left: 0,
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    color: "transparent",
+                  }}
+                  sizes="160px"
+                  src="/car__Porsche_Cayenne.png"
+                />
+              </div>
+              <div>
+                <p className="font-semibold text-white">Thomas Martin</p>
+                <p className="text-sm text-white/60">Consultant IT</p>
+              </div>
+            </div>
+            <p className="mt-3 text-white/80 text-sm leading-relaxed">
+              J'utilise Carbivio pour toute ma flotte de véhicules. La plateforme est intuitive et les interventions toujours ponctuelles. Un gain de temps énorme !
             </p>
           </div>
         </div>
@@ -82,43 +115,53 @@ export default function LoginPage() {
       {/* Panneau formulaire */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
-          <Link
-            href="/"
-            className="lg:hidden w-fit group flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed border-[#ff8c00]/50 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-[#eca226]/50 transition-all duration-300 mb-8"
-          >
-            <ArrowLeftPhosphor
-              className="w-5 h-5 text-[#eca226] group-hover:text-[#d4911f] transition-colors duration-300"
-              weight="duotone"
-            />
-            <span className="text-white/80 group-hover:text-white text-sm font-medium transition-colors duration-300">
-              Accueil
-            </span>
-          </Link>
+          <div className="mb-12 lg:hidden">
+            <Link
+              href="/"
+              className="w-fit group flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed border-[#ff8c00]/50 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-[#eca226]/50 transition-all duration-300 mb-8"
+            >
+              <ArrowLeftPhosphor
+                className="w-5 h-5 text-[#eca226] group-hover:text-[#d4911f] transition-colors duration-300"
+                weight="duotone"
+              />
+              <span className="text-white/80 group-hover:text-white text-sm font-medium transition-colors duration-300">
+                Accueil
+              </span>
+            </Link>
+          </div>
 
           <div className="mb-10">
             <h2 className="font-montserrat font-extrabold text-4xl text-white mb-3">
-              Bon retour
+              Connexion
             </h2>
-            <p className="text-white/40">
-              Connectez-vous à votre compte pour continuer.
+            <p className="text-white/40 mb-8">
+              Accédez à votre espace Carbivio.
             </p>
           </div>
 
+          {error && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl">
+              <p className="text-red-400 text-sm font-medium">{error}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email */}
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">
                 Adresse e-mail
               </label>
               <input
                 type="email"
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
                 placeholder="vous@exemple.com"
                 className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-[#eca226] focus:bg-white/[0.07] transition-all numbers-idgrotesk"
               />
             </div>
 
+            {/* Mot de passe */}
             <div>
               <label className="block text-sm font-medium text-white/60 mb-2">
                 Mot de passe
@@ -126,13 +169,13 @@ export default function LoginPage() {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
-                  value={form.password}
+                  value={formData.password}
                   onChange={(e) =>
-                    setForm({ ...form, password: e.target.value })
+                    setFormData({ ...formData, password: e.target.value })
                   }
                   required
-                  placeholder="••••••••"
-                  className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-[#eca226] focus:bg-white/[0.07] transition-all pr-12 numbers-idgrotesk"
+                  placeholder="Votre mot de passe"
+                  className="w-full px-5 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/20 focus:outline-none focus:border-[#eca226] focus:bg-white/[0.07] transition-all pr-12 font-idgrotesk"
                 />
                 <button
                   type="button"
@@ -163,15 +206,26 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="mt-8 text-center text-white/40 text-sm">
-            Pas encore de compte ?{" "}
-            <Link
-              href="/register"
-              className="text-[#eca226] font-medium hover:underline"
-            >
-              Créer un compte
-            </Link>
-          </p>
+          <div className="mt-8 text-center">
+            <p className="text-white/40 text-sm">
+              Pas encore de compte ?{" "}
+              <Link
+                href="/register"
+                className="text-[#eca226] hover:text-[#d4911f] transition-colors font-medium"
+              >
+                Inscrivez-vous
+              </Link>
+            </p>
+            <p className="text-white/20 text-xs mt-2">
+              Ou{" "}
+              <Link
+                href="/forgot-password"
+                className="text-[#eca226]/80 hover:text-[#eca226] transition-colors underline"
+              >
+                mot de passe oublié ?
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

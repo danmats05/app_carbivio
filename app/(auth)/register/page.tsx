@@ -34,7 +34,7 @@ export default function RegisterPage() {
         return;
       }
       toast.success("Compte créé ! Bienvenue sur Carbivio !");
-      router.push("/dashboard");
+      router.push("/admin");
     } catch {
       toast.error("Une erreur est survenue. Veuillez réessayer.");
     } finally {

@@ -38,23 +38,64 @@ export default function ParametresPage() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
+  // États pour les informations personnelles
+  const [adminInfo, setAdminInfo] = useState({
+    name: "Dumix MABANZA",
+    email: "admin@carbivio.com",
+    phone: "+221 77 123 45 67",
+    role: "Administrateur",
+  });
+  const [isEditingInfo, setIsEditingInfo] = useState(false);
+  const [infoSuccess, setInfoSuccess] = useState("");
+
   const handleLogout = () => {
     // Afficher le dialogue de confirmation
     setShowLogoutDialog(true);
   };
 
-  const confirmLogout = () => {
+  const confirmLogout = async () => {
     // Fermer le dialogue
     setShowLogoutDialog(false);
     // Activer l'état de chargement
     setIsLoggingOut(true);
 
-    // Simuler un délai de chargement
-    setTimeout(() => {
-      // Rediriger vers la page d'accueil
-      router.push("/");
-      setIsLoggingOut(false);
-    }, 1500);
+    try {
+      // Appeler l'API de déconnexion
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        // Rediriger vers la page d'accueil après déconnexion réussie
+        setTimeout(() => {
+          router.push("/");
+        }, 1500);
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Même en cas d'erreur, rediriger vers l'accueil
+      setTimeout(() => {
+        router.push("/");
+      }, 1500);
+    }
+  };
+
+  const handleSaveInfo = () => {
+    // Simuler la sauvegarde des informations
+    setInfoSuccess("Informations mises à jour avec succès");
+    setIsEditingInfo(false);
+    setTimeout(() => setInfoSuccess(""), 3000);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingInfo(false);
+    // Réinitialiser aux valeurs originales
+    setAdminInfo({
+      name: "Dumix MABANZA",
+      email: "admin@carbivio.com",
+      phone: "+221 77 123 45 67",
+      role: "Administrateur",
+    });
   };
 
   const cancelLogout = () => {
@@ -103,6 +144,108 @@ export default function ParametresPage() {
         <main className="flex-1 overflow-y-auto p-6">
           <div className="space-y-6 max-w-400 mx-auto">
             {/* Le titre et la description sont maintenant gérés par le header */}
+
+            {/* Informations personnelles */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-full border-2 border-dashed border-primary">
+                    <Shield className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-card-foreground">
+                      Informations personnelles
+                    </CardTitle>
+                    <CardDescription>
+                      Gérez vos informations d&apos;administrateur
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {infoSuccess && (
+                  <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                    <p className="text-sm text-green-600">{infoSuccess}</p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nom complet</Label>
+                    <Input
+                      id="name"
+                      value={adminInfo.name}
+                      onChange={(e) =>
+                        setAdminInfo({ ...adminInfo, name: e.target.value })
+                      }
+                      disabled={!isEditingInfo}
+                      className="bg-background border-border"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={adminInfo.email}
+                      onChange={(e) =>
+                        setAdminInfo({ ...adminInfo, email: e.target.value })
+                      }
+                      disabled={!isEditingInfo}
+                      className="bg-background border-border"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Téléphone</Label>
+                    <Input
+                      id="phone"
+                      value={adminInfo.phone}
+                      onChange={(e) =>
+                        setAdminInfo({ ...adminInfo, phone: e.target.value })
+                      }
+                      disabled={!isEditingInfo}
+                      className="bg-background border-border"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="role">Rôle</Label>
+                    <Input
+                      id="role"
+                      value={adminInfo.role}
+                      disabled
+                      className="bg-muted border-border text-muted-foreground"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  {!isEditingInfo ? (
+                    <Button
+                      onClick={() => setIsEditingInfo(true)}
+                      className="bg-primary text-primary-foreground hover:bg-primary/90"
+                    >
+                      Modifier
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        onClick={handleSaveInfo}
+                        className="bg-primary text-primary-foreground hover:bg-primary/90"
+                      >
+                        Enregistrer
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={handleCancelEdit}
+                        className="bg-background border-border text-card-foreground hover:bg-secondary/50"
+                      >
+                        Annuler
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Paramètres des notifications */}
             <Card className="bg-card border-border">

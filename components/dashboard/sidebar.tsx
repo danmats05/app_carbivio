@@ -60,7 +60,7 @@ export function DashboardSidebar() {
               Dashboard
             </span>
             <span className="text-xs text-muted-foreground">
-              Admin: Mamadou Ba
+              Admin: Dumix MABANZA
             </span>
           </div>
         )}

@@ -11,6 +11,9 @@ import {
   Users,
   Path,
   Wrench as MaintenanceIcon,
+  UserCircle,
+  EnvelopeSimple,
+  Lock,
 } from "@phosphor-icons/react";
 import {
   Card,
@@ -26,6 +29,13 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useFont } from "@/hooks/useFont";
 import { NumberTextWrapper } from "@/components/ui/number-text-wrapper";
+
+interface Driver {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
 
 interface Vehicle {
   id: string;
@@ -62,10 +72,63 @@ export default function FlottePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Charger les véhicules depuis l'API au montage du composant
+  // État pour les chauffeurs
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [driversLoading, setDriversLoading] = useState(true);
+  const [showAddDriver, setShowAddDriver] = useState(false);
+  const [driverForm, setDriverForm] = useState({ name: "", email: "", password: "" });
+  const [driverFormError, setDriverFormError] = useState("");
+  const [savingDriver, setSavingDriver] = useState(false);
+
+  // Charger les véhicules et chauffeurs au montage
   useEffect(() => {
     fetchVehicles();
+    fetchDrivers();
   }, []);
+
+  const fetchDrivers = async () => {
+    try {
+      setDriversLoading(true);
+      const res = await fetch("/api/drivers");
+      if (res.ok) setDrivers(await res.json());
+    } catch { /* silencieux */ }
+    finally { setDriversLoading(false); }
+  };
+
+  const handleAddDriver = async () => {
+    if (!driverForm.name || !driverForm.email || !driverForm.password) {
+      setDriverFormError("Tous les champs sont requis");
+      return;
+    }
+    setSavingDriver(true);
+    setDriverFormError("");
+    try {
+      const res = await fetch("/api/drivers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(driverForm),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setDriverFormError(data.error ?? "Erreur lors de la création");
+        return;
+      }
+      setDrivers((prev) => {
+        const exists = prev.find((d) => d.id === data.id);
+        return exists ? prev.map((d) => d.id === data.id ? data : d) : [...prev, data];
+      });
+      setDriverForm({ name: "", email: "", password: "" });
+      setShowAddDriver(false);
+    } finally {
+      setSavingDriver(false);
+    }
+  };
+
+  const handleDeleteDriver = async (id: string) => {
+    if (!confirm("Supprimer ce chauffeur ?")) return;
+    await fetch(`/api/drivers?id=${id}`, { method: "DELETE" });
+    setDrivers((prev) => prev.filter((d) => d.id !== id));
+  };
 
   const fetchVehicles = async () => {
     try {
@@ -437,6 +500,162 @@ export default function FlottePage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* ── Section Chauffeurs ── */}
+            <Card className="bg-card border-border">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <UserCircle className="w-5 h-5 text-primary" />
+                      Chauffeurs
+                    </CardTitle>
+                    <CardDescription>
+                      Comptes chauffeurs autorisés à recevoir des missions
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={() => { setShowAddDriver(true); setDriverFormError(""); }}
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2"
+                    size="sm"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Ajouter un chauffeur
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                {driversLoading ? (
+                  <div className="py-6 text-center text-muted-foreground text-sm">Chargement…</div>
+                ) : drivers.length === 0 ? (
+                  <div className="py-10 text-center">
+                    <UserCircle className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+                    <p className="text-muted-foreground text-sm">Aucun chauffeur enregistré.</p>
+                    <p className="text-muted-foreground/60 text-xs mt-1">Ajoutez un chauffeur pour pouvoir lui attribuer des commandes.</p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border bg-muted/30">
+                          {["Nom", "Email", "Membre depuis", "Actions"].map((h) => (
+                            <th key={h} className="text-left p-3 text-sm font-medium text-muted-foreground">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {drivers.map((d) => (
+                          <tr key={d.id} className="border-b border-border hover:bg-muted/20 transition-colors">
+                            <td className="p-3">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                                  <UserCircle className="w-4 h-4 text-primary" />
+                                </div>
+                                <span className="font-medium text-card-foreground text-sm">{d.name}</span>
+                              </div>
+                            </td>
+                            <td className="p-3 text-sm text-muted-foreground">{d.email}</td>
+                            <td className="p-3 text-sm text-muted-foreground numbers-idgrotesk">
+                              {new Date(d.createdAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
+                            </td>
+                            <td className="p-3">
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => handleDeleteDriver(d.id)}
+                                className="flex items-center gap-1"
+                              >
+                                <Trash className="w-3 h-3" />
+                                Supprimer
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Add Driver Dialog */}
+            {showAddDriver && (
+              <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className="bg-card border border-border rounded-lg p-6 shadow-lg max-w-md w-full mx-4">
+                  <div className="flex items-center justify-between mb-5">
+                    <h3 className="text-lg font-semibold text-card-foreground flex items-center gap-2">
+                      <UserCircle className="w-5 h-5 text-primary" />
+                      Nouveau chauffeur
+                    </h3>
+                    <button onClick={() => setShowAddDriver(false)} className="text-muted-foreground hover:text-foreground">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {driverFormError && (
+                    <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+                      {driverFormError}
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="d-name" className="flex items-center gap-1.5">
+                        <UserCircle className="w-3.5 h-3.5" /> Nom complet
+                      </Label>
+                      <Input
+                        id="d-name"
+                        value={driverForm.name}
+                        onChange={(e) => setDriverForm({ ...driverForm, name: e.target.value })}
+                        className="bg-muted border-border"
+                        placeholder="Mamadou Diallo"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="d-email" className="flex items-center gap-1.5">
+                        <EnvelopeSimple className="w-3.5 h-3.5" /> Adresse e-mail
+                      </Label>
+                      <Input
+                        id="d-email"
+                        type="email"
+                        value={driverForm.email}
+                        onChange={(e) => setDriverForm({ ...driverForm, email: e.target.value })}
+                        className="bg-muted border-border numbers-idgrotesk"
+                        placeholder="chauffeur@carbivio.com"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="d-pass" className="flex items-center gap-1.5">
+                        <Lock className="w-3.5 h-3.5" /> Mot de passe
+                      </Label>
+                      <Input
+                        id="d-pass"
+                        type="password"
+                        value={driverForm.password}
+                        onChange={(e) => setDriverForm({ ...driverForm, password: e.target.value })}
+                        className="bg-muted border-border"
+                        placeholder="••••••••"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Si l&apos;email correspond à un compte existant, il sera promu au rôle Chauffeur.
+                    </p>
+                    <div className="flex gap-3 justify-end pt-2">
+                      <Button variant="outline" onClick={() => setShowAddDriver(false)} className="border-border">
+                        Annuler
+                      </Button>
+                      <Button
+                        onClick={handleAddDriver}
+                        disabled={savingDriver}
+                        className="bg-primary text-primary-foreground hover:bg-primary/90"
+                      >
+                        {savingDriver ? "Création…" : "Créer le chauffeur"}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Add Vehicle Dialog */}
             {showAddDialog && (

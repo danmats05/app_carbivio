@@ -39,7 +39,14 @@ export async function registerController(req: Request) {
       },
     });
 
-    return NextResponse.json(
+    const token = await signToken({
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.name,
+    });
+
+    const response = NextResponse.json(
       {
         message: "User registered successfully",
         user: {
@@ -51,6 +58,17 @@ export async function registerController(req: Request) {
       },
       { status: 201 },
     );
+
+    // Définir le cookie JWT pour connecter l'utilisateur immédiatement
+    response.cookies.set("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7, // 7 jours
+      path: "/",
+    });
+
+    return response;
   } catch (error) {
     console.error("Registration error:", error);
     return NextResponse.json(
@@ -107,11 +125,12 @@ export async function loginController(req: Request) {
       { status: 200 },
     );
 
+    // Définir le cookie JWT
     response.cookies.set("auth_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24, // 24 hours
+      maxAge: 60 * 60 * 24 * 7, // 7 jours
       path: "/",
     });
 

@@ -10,11 +10,13 @@ datasource db {
 enum Role {
   USER
   ADMIN
+  DRIVER
 }
 
 enum RequestStatus {
   PENDING
   APPROVED
+  IN_PROGRESS
   REJECTED
   COMPLETED
 }
@@ -27,13 +29,15 @@ enum VehicleStatus {
 }
 
 model User {
-  id              String           @id @default(uuid())
-  name            String
-  email           String           @unique
-  password        String
-  role            Role             @default(USER)
-  createdAt       DateTime         @default(now()) @map("created_at")
-  serviceRequests ServiceRequest[]
+  id               String           @id @default(uuid())
+  name             String
+  email            String           @unique
+  password         String
+  role             Role             @default(USER)
+  createdAt        DateTime         @default(now()) @map("created_at")
+  serviceRequests      ServiceRequest[]     @relation("ClientRequests")
+  assignedRequests     ServiceRequest[]     @relation("DriverRequests")
+  passwordResetTokens  PasswordResetToken[]
 
   @@map("users")
 }
@@ -41,6 +45,7 @@ model User {
 model ServiceRequest {
   id          String        @id @default(uuid())
   userId      String        @map("user_id")
+  driverId    String?       @map("driver_id")
   serviceType String        @map("service_type")
   description String        @db.Text
   location    String
@@ -51,11 +56,27 @@ model ServiceRequest {
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User  @relation("ClientRequests", fields: [userId], references: [id], onDelete: Cascade)
+  driver User? @relation("DriverRequests", fields: [driverId], references: [id], onDelete: SetNull)
 
   @@index([userId])
+  @@index([driverId])
   @@index([status])
   @@map("service_requests")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@map("password_reset_tokens")
 }
 
 model AdminLog {

@@ -150,7 +150,7 @@ const mockAllocations: ResourceAllocation[] = [
     resourceId: "1",
     resourceName: "Sans Plomb 95",
     driverId: "1",
-    driverName: "Mamadou Ba",
+    driverName: "Dumix MABANZA",
     driverPhone: "+221 77 123 45 67",
     amount: 45,
     unit: "L",
@@ -186,7 +186,7 @@ const mockAllocations: ResourceAllocation[] = [
 const mockDrivers: Driver[] = [
   {
     id: "1",
-    name: "Mamadou Ba",
+    name: "Dumix MABANZA",
     phone: "+221 77 123 45 67",
     vehicle: "Toyota Hilux",
     plate: "DK 1234 AB",

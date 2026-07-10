@@ -1,6 +1,16 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
-import { createRequest } from "@/services/requests";
+import { createRequest, getAllRequests } from "@/services/requests";
+import { notificationEmitter } from "@/lib/notifications";
+
+export async function GET() {
+  const session = await getSession();
+  if (!session || session.role !== "ADMIN") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const requests = await getAllRequests();
+  return NextResponse.json(requests);
+}
 
 export async function POST(req: Request) {
   try {
@@ -24,6 +34,15 @@ export async function POST(req: Request) {
       serviceType,
       description,
       location,
+    });
+
+    // Notifier le dashboard admin en temps réel
+    notificationEmitter.emit("new_order", {
+      id: request.id,
+      clientName: (session as any).name ?? "Client",
+      serviceType,
+      location,
+      createdAt: new Date().toISOString(),
     });
 
     return NextResponse.json(

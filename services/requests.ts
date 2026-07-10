@@ -9,9 +9,42 @@ export async function getUserRequests(userId: string) {
 
 export async function getAllRequests() {
   return prisma.serviceRequest.findMany({
+    include: {
+      user: { select: { name: true, email: true } },
+      driver: { select: { id: true, name: true, email: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function getDriverRequests(driverId: string) {
+  return prisma.serviceRequest.findMany({
+    where: { driverId },
     include: { user: { select: { name: true, email: true } } },
     orderBy: { createdAt: "desc" },
   });
+}
+
+export async function assignDriverToRequest(
+  requestId: string,
+  driverId: string,
+  adminId: string,
+) {
+  const req = await prisma.serviceRequest.update({
+    where: { id: requestId },
+    data: { driverId },
+    include: { user: { select: { name: true, email: true } } },
+  });
+
+  await prisma.adminLog.create({
+    data: {
+      adminId,
+      action: "ASSIGNED_DRIVER",
+      targetId: requestId,
+    },
+  });
+
+  return req;
 }
 
 export async function createRequest(data: {
@@ -50,6 +83,16 @@ export async function updateRequestStatus(
   });
 
   return req;
+}
+
+export async function updateRequestStatusByDriver(
+  id: string,
+  status: "IN_PROGRESS" | "COMPLETED",
+) {
+  return prisma.serviceRequest.update({
+    where: { id },
+    data: { status },
+  });
 }
 
 export async function deleteRequest(id: string, adminId: string) {

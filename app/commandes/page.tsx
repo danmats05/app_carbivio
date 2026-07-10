@@ -1,371 +1,195 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardSidebar } from "@/components/dashboard/sidebar";
 import { DashboardHeader } from "@/components/dashboard/header";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CarbivioBadge } from "@/components/ui/carbivio-badge";
-import { OrderDetailsModal } from "@/components/ui/order-details-modal";
 import {
   Package,
   Clock,
-  Plus,
   MagnifyingGlass,
-  TrendUp,
   Truck,
   MapPin,
+  CheckCircle,
+  ArrowsClockwise,
+  X,
+  User,
+  EnvelopeSimple,
+  TextAlignLeft,
+  CalendarBlank,
+  FireSimple,
+  Lightning,
+  Drop,
+  Tire,
+  Siren,
+  Spinner,
+  Warning,
 } from "@phosphor-icons/react";
+import { toast } from "sonner";
 
-// Types pour les commandes
-interface Order {
-  id: string;
-  customer: string;
-  customerPhone: string;
-  customerEmail: string;
-  items: OrderItem[];
-  status:
-    | "en-attente"
-    | "confirmee"
-    | "en-preparation"
-    | "prete"
-    | "en-livraison"
-    | "livree"
-    | "annulee";
-  priority: "basse" | "normale" | "haute" | "urgente";
-  totalAmount: number;
-  orderDate: string;
-  estimatedDelivery: string;
-  deliveryAddress: string;
-  paymentMethod: "especes" | "carte" | "mobile" | "virement";
-  paymentStatus: "en-attente" | "payee" | "partiel" | "annulee";
-  notes?: string;
-}
-
-interface OrderItem {
+interface Driver {
   id: string;
   name: string;
-  category: "carburant" | "huile" | "pneu" | "batterie" | "service";
-  quantity: number;
-  unitPrice: number;
-  totalPrice: number;
+  email: string;
 }
 
-// Configuration des statuts
-const statusConfig = {
-  "en-attente": { label: "En attente", color: "en-route" },
-  confirmee: { label: "Confirmée", color: "disponible" },
-  "en-preparation": { label: "En préparation", color: "en-route" },
-  prete: { label: "Prête", color: "disponible" },
-  "en-livraison": { label: "En livraison", color: "en-route" },
-  livree: { label: "Livrée", color: "disponible" },
-  annulee: { label: "Annulée", color: "hors-service" },
+interface ServiceRequest {
+  id: string;
+  serviceType: string;
+  description: string;
+  location: string;
+  latitude: number | null;
+  longitude: number | null;
+  status: "PENDING" | "APPROVED" | "IN_PROGRESS" | "REJECTED" | "COMPLETED";
+  price: number | null;
+  createdAt: string;
+  updatedAt: string;
+  driverId: string | null;
+  user: { name: string; email: string };
+  driver: Driver | null;
+}
+
+const SERVICE_LABELS: Record<string, string> = {
+  carburant: "Carburant",
+  batterie: "Batterie",
+  huile: "Huile moteur",
+  pneus: "Pneus",
+  urgence: "Urgence",
 };
 
-const priorityConfig = {
-  basse: { label: "Basse", color: "disponible" },
-  normale: { label: "Normale", color: "en-route" },
-  haute: { label: "Haute", color: "hors-service" },
-  urgente: { label: "Urgente", color: "hors-service" },
+const SERVICE_ICONS: Record<string, React.ReactNode> = {
+  carburant: <FireSimple weight="duotone" className="w-4 h-4" />,
+  batterie:  <Lightning weight="duotone" className="w-4 h-4" />,
+  huile:     <Drop weight="duotone" className="w-4 h-4" />,
+  pneus:     <Tire weight="duotone" className="w-4 h-4" />,
+  urgence:   <Siren weight="duotone" className="w-4 h-4" />,
 };
 
-const paymentConfig = {
-  "en-attente": { label: "En attente", color: "hors-service" },
-  payee: { label: "Payé", color: "disponible" },
-  partiel: { label: "Partiel", color: "en-route" },
-  annulee: { label: "Annulé", color: "hors-service" },
-};
+function getStatusDisplay(r: ServiceRequest): { label: string; className: string } {
+  if (r.status === "COMPLETED")  return { label: "Terminée",     className: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" };
+  if (r.status === "REJECTED")   return { label: "Rejetée",      className: "bg-red-500/10 text-red-400 border border-red-500/20" };
+  if (r.status === "IN_PROGRESS") return { label: "En route",    className: "bg-blue-500/10 text-blue-400 border border-blue-500/20" };
+  if (!r.driver)                  return { label: "Non assignée", className: "bg-muted/50 text-muted-foreground border border-border" };
+  return { label: "Assignée", className: "bg-primary/10 text-primary border border-primary/20" };
+}
 
-// Données factices pour les commandes
-const mockOrders: Order[] = [
-  {
-    id: "CMD-2024-001",
-    customer: "Société Sénégal Transport",
-    customerPhone: "+221 33 123 45 67",
-    customerEmail: "contact@senegal-transport.sn",
-    items: [
-      {
-        id: "1",
-        name: "Sans Plomb 95",
-        category: "carburant",
-        quantity: 100,
-        unitPrice: 850,
-        totalPrice: 85000,
-      },
-      {
-        id: "2",
-        name: "Huile moteur 5W-30",
-        category: "huile",
-        quantity: 5,
-        unitPrice: 12000,
-        totalPrice: 60000,
-      },
-    ],
-    status: "en-preparation",
-    priority: "haute",
-    totalAmount: 145000,
-    orderDate: "12/04/2024",
-    estimatedDelivery: "13/04/2024",
-    deliveryAddress: "Dakar, Plateau, Rue 123",
-    paymentMethod: "carte",
-    paymentStatus: "payee",
-    notes: "Client VIP - Livraison prioritaire",
-  },
-  {
-    id: "CMD-2024-002",
-    customer: "Distribution Kaolack",
-    customerPhone: "+221 33 987 65 43",
-    customerEmail: "info@kaolack-dist.sn",
-    items: [
-      {
-        id: "3",
-        name: "Gazole",
-        category: "carburant",
-        quantity: 200,
-        unitPrice: 780,
-        totalPrice: 156000,
-      },
-    ],
-    status: "confirmee",
-    priority: "normale",
-    totalAmount: 156000,
-    orderDate: "12/04/2024",
-    estimatedDelivery: "14/04/2024",
-    deliveryAddress: "Kaolack, Centre, Avenue 45",
-    paymentMethod: "virement",
-    paymentStatus: "en-attente",
-  },
-  {
-    id: "CMD-2024-003",
-    customer: "Service Logistique Thiès",
-    customerPhone: "+221 33 456 78 90",
-    customerEmail: "logistics@thies-service.sn",
-    items: [
-      {
-        id: "4",
-        name: "Pneu 205/55 R16",
-        category: "pneu",
-        quantity: 4,
-        unitPrice: 45000,
-        totalPrice: 180000,
-      },
-      {
-        id: "5",
-        name: "Batterie 12V 60Ah",
-        category: "batterie",
-        quantity: 2,
-        unitPrice: 55000,
-        totalPrice: 110000,
-      },
-    ],
-    status: "livree",
-    priority: "basse",
-    totalAmount: 290000,
-    orderDate: "11/04/2024",
-    estimatedDelivery: "12/04/2024",
-    deliveryAddress: "Thiès, Zone Industrielle",
-    paymentMethod: "especes",
-    paymentStatus: "payee",
-  },
-  {
-    id: "CMD-2024-004",
-    customer: "Entreprise Saint-Louis",
-    customerPhone: "+221 33 234 56 78",
-    customerEmail: "contact@stlouis-entreprise.sn",
-    items: [
-      {
-        id: "6",
-        name: "Service dépannage",
-        category: "service",
-        quantity: 1,
-        unitPrice: 25000,
-        totalPrice: 25000,
-      },
-      {
-        id: "7",
-        name: "Super 98",
-        category: "carburant",
-        quantity: 50,
-        unitPrice: 920,
-        totalPrice: 46000,
-      },
-    ],
-    status: "en-livraison",
-    priority: "urgente",
-    totalAmount: 71000,
-    orderDate: "12/04/2024",
-    estimatedDelivery: "12/04/2024",
-    deliveryAddress: "Saint-Louis, Port",
-    paymentMethod: "mobile",
-    paymentStatus: "partiel",
-    notes: "Urgence - Camion en panne",
-  },
-  {
-    id: "CMD-2024-005",
-    customer: "Fournisseur Tambacounda",
-    customerPhone: "+221 33 345 67 89",
-    customerEmail: "orders@tamba-fournisseur.sn",
-    items: [
-      {
-        id: "8",
-        name: "Huile transmission",
-        category: "huile",
-        quantity: 10,
-        unitPrice: 15000,
-        totalPrice: 150000,
-      },
-    ],
-    status: "annulee",
-    priority: "normale",
-    totalAmount: 150000,
-    orderDate: "11/04/2024",
-    estimatedDelivery: "13/04/2024",
-    deliveryAddress: "Tambacounda, Marché",
-    paymentMethod: "carte",
-    paymentStatus: "annulee",
-    notes: "Annulation client",
-  },
-];
-
-// Composant pour les statistiques des commandes
-function OrderStats({ orders }: { orders: Order[] }) {
-  const totalOrders = orders.length;
-  const enAttente = orders.filter((o) => o.status === "en-attente").length;
-  const enPreparation = orders.filter(
-    (o) => o.status === "en-preparation",
-  ).length;
-  const enLivraison = orders.filter((o) => o.status === "en-livraison").length;
-  const livrees = orders.filter((o) => o.status === "livree").length;
-  const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">Total commandes</p>
-              <p className="text-2xl font-bold text-card-foreground">
-                {totalOrders}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-full border-2 border-dashed border-primary/50 flex items-center justify-center">
-              <Package className="w-6 h-6 text-primary" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">En attente</p>
-              <p className="text-2xl font-bold text-card-foreground">
-                {enAttente}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-full border-2 border-dashed border-yellow-500/50 flex items-center justify-center">
-              <Clock className="w-6 h-6 text-yellow-500" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">En préparation</p>
-              <p className="text-2xl font-bold text-card-foreground">
-                {enPreparation}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-full border-2 border-dashed border-blue-500/50 flex items-center justify-center">
-              <Truck className="w-6 h-6 text-blue-500" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">En livraison</p>
-              <p className="text-2xl font-bold text-card-foreground">
-                {enLivraison}
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-full border-2 border-dashed border-orange-500/50 flex items-center justify-center">
-              <MapPin className="w-6 h-6 text-orange-500" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">
-                Chiffre d'affaires
-              </p>
-              <p className="text-2xl font-bold text-card-foreground">
-                {(totalRevenue / 1000000).toFixed(1)}M
-              </p>
-            </div>
-            <div className="w-12 h-12 rounded-full border-2 border-dashed border-green-500/50 flex items-center justify-center">
-              <TrendUp className="w-6 h-6 text-green-500" />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
+}
+function formatTime(iso: string) {
+  return new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 }
 
 export default function CommandesPage() {
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [priorityFilter, setPriorityFilter] = useState<string>("all");
-  const [paymentFilter, setPaymentFilter] = useState<string>("all");
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [requests, setRequests]         = useState<ServiceRequest[]>([]);
+  const [drivers, setDrivers]           = useState<Driver[]>([]);
+  const [loading, setLoading]           = useState(true);
+  const [searchTerm, setSearchTerm]     = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [selected, setSelected]         = useState<ServiceRequest | null>(null);
+  const [pendingDriver, setPendingDriver] = useState("");
+  const [assigning, setAssigning]       = useState(false);
 
-  // Filtrer les commandes
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearch =
-      order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customerPhone.includes(searchTerm) ||
-      order.customerEmail.toLowerCase().includes(searchTerm.toLowerCase());
+  useEffect(() => {
+    loadOrders();
+    loadDrivers();
+  }, []);
 
-    const matchesStatus =
-      statusFilter === "all" || order.status === statusFilter;
-    const matchesPriority =
-      priorityFilter === "all" || order.priority === priorityFilter;
-    const matchesPayment =
-      paymentFilter === "all" || order.paymentStatus === paymentFilter;
+  // SSE — mises à jour chauffeur en temps réel
+  useEffect(() => {
+    const es = new EventSource("/api/notifications/stream");
+    es.addEventListener("driver_status_update", (e) => {
+      const n = JSON.parse(e.data) as {
+        requestId: string; driverName: string; clientName: string;
+        serviceType: string; newStatus: "IN_PROGRESS" | "COMPLETED";
+      };
+      setRequests((prev) =>
+        prev.map((r) => r.id === n.requestId ? { ...r, status: n.newStatus } : r)
+      );
+      setSelected((prev) =>
+        prev?.id === n.requestId ? { ...prev, status: n.newStatus } : prev
+      );
+      const label = n.newStatus === "IN_PROGRESS"
+        ? `🚚 ${n.driverName} a démarré sa mission`
+        : `✅ ${n.driverName} a terminé la livraison`;
+      toast(label, {
+        description: `Client : ${n.clientName} — ${SERVICE_LABELS[n.serviceType] ?? n.serviceType}`,
+        duration: 6000,
+      });
+    });
+    es.onerror = () => es.close();
+    return () => es.close();
+  }, []);
 
-    return matchesSearch && matchesStatus && matchesPriority && matchesPayment;
-  });
-
-  const handleOrderClick = (order: Order) => {
-    setSelectedOrder(order);
-    setIsModalOpen(true);
+  const loadOrders = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/requests");
+      if (res.ok) setRequests(await res.json());
+    } catch (e) { console.error(e); }
+    finally { setLoading(false); }
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedOrder(null);
+  const loadDrivers = async () => {
+    try {
+      const res = await fetch("/api/drivers");
+      if (res.ok) setDrivers(await res.json());
+    } catch { /* silencieux */ }
+  };
+
+  const assignDriver = async () => {
+    if (!selected || !pendingDriver) return;
+    setAssigning(true);
+    try {
+      const res = await fetch(`/api/requests/${selected.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ driverId: pendingDriver }),
+      });
+      if (res.ok) {
+        const driver = drivers.find((d) => d.id === pendingDriver) ?? null;
+        setRequests((prev) =>
+          prev.map((r) => r.id === selected.id ? { ...r, driver, driverId: pendingDriver } : r)
+        );
+        setSelected((prev) => prev ? { ...prev, driver, driverId: pendingDriver } : null);
+        toast(`🚚 Commande attribuée à ${driver?.name}`, {
+          description: "Le chauffeur a été notifié en temps réel.",
+        });
+      }
+    } finally {
+      setAssigning(false);
+    }
+  };
+
+  const openDetail = (r: ServiceRequest) => {
+    setSelected(r);
+    setPendingDriver(r.driver?.id ?? "");
+  };
+
+  const filtered = requests.filter((r) => {
+    const q = searchTerm.toLowerCase();
+    const matchSearch =
+      r.user.name.toLowerCase().includes(q) ||
+      r.user.email.toLowerCase().includes(q) ||
+      r.location.toLowerCase().includes(q) ||
+      (SERVICE_LABELS[r.serviceType] ?? r.serviceType).toLowerCase().includes(q);
+
+    if (statusFilter === "all") return matchSearch;
+    if (statusFilter === "NON_ASSIGNEE") return matchSearch && !r.driver && r.status !== "COMPLETED" && r.status !== "REJECTED";
+    return matchSearch && r.status === statusFilter;
+  });
+
+  const counts = {
+    total:       requests.length,
+    nonAssigned: requests.filter((r) => !r.driver && r.status !== "COMPLETED" && r.status !== "REJECTED").length,
+    active:      requests.filter((r) => r.driver && (r.status === "APPROVED" || r.status === "IN_PROGRESS")).length,
+    completed:   requests.filter((r) => r.status === "COMPLETED").length,
   };
 
   return (
@@ -375,230 +199,314 @@ export default function CommandesPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <DashboardHeader
           title="Commandes"
-          description="Gérez toutes les commandes clients et suivez leur évolution"
-          showControls={true}
+          description="Attribution et suivi des demandes de service clients"
+          showControls={false}
         />
 
         <main className="flex-1 overflow-y-auto p-6">
           <div className="space-y-6 max-w-7xl mx-auto">
-            {/* Statistiques */}
-            <OrderStats orders={orders} />
 
-            {/* Filtres et recherche */}
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { label: "Total",        value: counts.total,       icon: Package,     color: "text-primary",    border: "border-primary/50" },
+                { label: "Non assignées",value: counts.nonAssigned, icon: Warning,     color: "text-yellow-500", border: "border-yellow-500/50" },
+                { label: "En cours",     value: counts.active,      icon: Truck,       color: "text-blue-500",   border: "border-blue-500/50" },
+                { label: "Terminées",    value: counts.completed,   icon: CheckCircle, color: "text-green-500",  border: "border-green-500/50" },
+              ].map(({ label, value, icon: Icon, color, border }) => (
+                <Card key={label} className="bg-card border-border">
+                  <CardContent className="p-5">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm text-muted-foreground">{label}</p>
+                        <p className="text-2xl font-bold text-card-foreground numbers-idgrotesk">{value}</p>
+                      </div>
+                      <div className={`w-11 h-11 rounded-full border-2 border-dashed ${border} flex items-center justify-center`}>
+                        <Icon className={`w-5 h-5 ${color}`} />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Filtres + actualiser */}
             <Card className="bg-card border-border">
               <CardContent className="p-4">
-                <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex flex-col md:flex-row gap-3">
                   <div className="flex-1 relative">
-                    <MagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                    <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
                     <input
                       type="text"
-                      placeholder="Rechercher une commande..."
+                      placeholder="Rechercher par client, service, localisation…"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg text-card-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg text-card-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     />
                   </div>
-
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <select
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
-                      className="px-4 py-2 bg-background border border-border rounded-lg text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                      <option value="all">Tous les statuts</option>
-                      <option value="en-attente">En attente</option>
-                      <option value="confirmee">Confirmée</option>
-                      <option value="en-preparation">En préparation</option>
-                      <option value="prete">Prête</option>
-                      <option value="en-livraison">En livraison</option>
-                      <option value="livree">Livrée</option>
-                      <option value="annulee">Annulée</option>
-                    </select>
-
-                    <select
-                      value={priorityFilter}
-                      onChange={(e) => setPriorityFilter(e.target.value)}
-                      className="px-4 py-2 bg-background border border-border rounded-lg text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                      <option value="all">Toutes les priorités</option>
-                      <option value="basse">Basse</option>
-                      <option value="normale">Normale</option>
-                      <option value="haute">Haute</option>
-                      <option value="urgente">Urgente</option>
-                    </select>
-
-                    <select
-                      value={paymentFilter}
-                      onChange={(e) => setPaymentFilter(e.target.value)}
-                      className="px-4 py-2 bg-background border border-border rounded-lg text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                    >
-                      <option value="all">Tous les paiements</option>
-                      <option value="en-attente">En attente</option>
-                      <option value="payee">Payé</option>
-                      <option value="partiel">Partiel</option>
-                      <option value="annulee">Annulé</option>
-                    </select>
-                  </div>
-
-                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Nouvelle commande
-                  </Button>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="px-4 py-2 bg-background border border-border rounded-lg text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                  >
+                    <option value="all">Tous les statuts</option>
+                    <option value="NON_ASSIGNEE">Non assignées</option>
+                    <option value="APPROVED">Assignées</option>
+                    <option value="IN_PROGRESS">En route</option>
+                    <option value="COMPLETED">Terminées</option>
+                    <option value="REJECTED">Rejetées</option>
+                  </select>
+                  <button
+                    onClick={loadOrders}
+                    className="flex items-center gap-2 px-4 py-2 bg-secondary border border-border rounded-lg text-card-foreground hover:bg-secondary/80 transition-colors text-sm"
+                  >
+                    <ArrowsClockwise className="w-4 h-4" />
+                    Actualiser
+                  </button>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Tableau des commandes */}
+            {/* Tableau */}
             <Card className="bg-card border-border">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg">Liste des commandes</CardTitle>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base">Liste des commandes</CardTitle>
                 <CardDescription>
-                  Gérez les informations de vos commandes clients
+                  {loading ? "Chargement…" : `${filtered.length} commande${filtered.length > 1 ? "s" : ""}`}
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border">
-                        <th className="p-4 text-left text-sm font-medium text-muted-foreground">
-                          Commande
-                        </th>
-                        <th className="p-4 text-left text-sm font-medium text-muted-foreground">
-                          Client
-                        </th>
-                        <th className="p-4 text-left text-sm font-medium text-muted-foreground">
-                          Articles
-                        </th>
-                        <th className="p-4 text-left text-sm font-medium text-muted-foreground">
-                          Statut
-                        </th>
-                        <th className="p-4 text-left text-sm font-medium text-muted-foreground">
-                          Priorité
-                        </th>
-                        <th className="p-4 text-left text-sm font-medium text-muted-foreground">
-                          Paiement
-                        </th>
-                        <th className="p-4 text-left text-sm font-medium text-muted-foreground">
-                          Date
-                        </th>
-                        <th className="p-4 text-left text-sm font-medium text-muted-foreground">
-                          Montant
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredOrders.map((order) => (
-                        <tr
-                          key={order.id}
-                          className="border-b border-border hover:bg-secondary/50 hover:text-card-foreground cursor-pointer transition-colors duration-200"
-                          onClick={() => handleOrderClick(order)}
-                        >
-                          <td className="p-4">
-                            <div>
-                              <p className="font-medium text-card-foreground">
-                                {order.id}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {order.orderDate}
-                              </p>
-                            </div>
-                          </td>
-                          <td className="p-4">
-                            <div>
-                              <p className="font-medium text-card-foreground">
-                                {order.customer}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {order.customerPhone}
-                              </p>
-                              <p className="text-xs text-muted-foreground truncate max-w-50">
-                                {order.customerEmail}
-                              </p>
-                            </div>
-                          </td>
-                          <td className="p-4">
-                            <div className="space-y-1">
-                              {order.items.slice(0, 2).map((item) => (
-                                <div key={item.id} className="text-xs">
-                                  <span className="text-card-foreground">
-                                    {item.name}
-                                  </span>
-                                  <span className="text-muted-foreground ml-1">
-                                    x{item.quantity}
-                                  </span>
-                                </div>
-                              ))}
-                              {order.items.length > 2 && (
-                                <p className="text-xs text-muted-foreground">
-                                  +{order.items.length - 2} autres
-                                </p>
-                              )}
-                            </div>
-                          </td>
-                          <td className="p-4">
-                            <CarbivioBadge
-                              variant={
-                                statusConfig[order.status].color as
-                                  | "disponible"
-                                  | "en-route"
-                                  | "hors-service"
-                              }
-                              size="sm"
-                            >
-                              {statusConfig[order.status].label}
-                            </CarbivioBadge>
-                          </td>
-                          <td className="p-4">
-                            <CarbivioBadge
-                              variant={
-                                priorityConfig[order.priority].color as
-                                  | "disponible"
-                                  | "en-route"
-                                  | "hors-service"
-                              }
-                              size="sm"
-                            >
-                              {priorityConfig[order.priority].label}
-                            </CarbivioBadge>
-                          </td>
-                          <td className="p-4">
-                            <CarbivioBadge
-                              variant={
-                                paymentConfig[order.paymentStatus].color as
-                                  | "disponible"
-                                  | "en-route"
-                                  | "hors-service"
-                              }
-                              size="sm"
-                            >
-                              {paymentConfig[order.paymentStatus].label}
-                            </CarbivioBadge>
-                          </td>
-                          <td className="p-4 text-sm text-card-foreground">
-                            {order.estimatedDelivery}
-                          </td>
-                          <td className="p-4 text-sm font-medium text-card-foreground">
-                            {(order.totalAmount / 1000).toFixed(0)}K FCFA
-                          </td>
+                {loading ? (
+                  <div className="flex items-center justify-center py-16">
+                    <ArrowsClockwise className="w-7 h-7 text-primary animate-spin" />
+                  </div>
+                ) : filtered.length === 0 ? (
+                  <div className="py-16 text-center text-muted-foreground text-sm">
+                    {requests.length === 0 ? "Aucune commande pour l'instant" : "Aucun résultat"}
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border">
+                          {["Client", "Service", "Localisation", "Chauffeur", "Statut", "Date", ""].map((h) => (
+                            <th key={h} className="p-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">{h}</th>
+                          ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {filtered.map((r) => {
+                          const st = getStatusDisplay(r);
+                          return (
+                            <tr key={r.id} className="border-b border-border hover:bg-secondary/40 transition-colors">
+                              <td className="p-4">
+                                <div className="font-medium text-card-foreground text-sm">{r.user.name}</div>
+                                <div className="text-xs text-muted-foreground">{r.user.email}</div>
+                              </td>
+                              <td className="p-4">
+                                <div className="flex items-center gap-2 text-card-foreground text-sm">
+                                  <span className="text-primary">{SERVICE_ICONS[r.serviceType]}</span>
+                                  {SERVICE_LABELS[r.serviceType] ?? r.serviceType}
+                                </div>
+                              </td>
+                              <td className="p-4">
+                                <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+                                  <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                                  <span className="max-w-40 truncate">{r.location}</span>
+                                </div>
+                              </td>
+                              <td className="p-4">
+                                {r.driver ? (
+                                  <div className="flex items-center gap-1.5 text-sm">
+                                    <User weight="duotone" className="w-3.5 h-3.5 text-primary shrink-0" />
+                                    <span className="text-card-foreground font-medium">{r.driver.name}</span>
+                                  </div>
+                                ) : (
+                                  <span className="text-muted-foreground text-sm italic">—</span>
+                                )}
+                              </td>
+                              <td className="p-4">
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${st.className}`}>
+                                  {st.label}
+                                </span>
+                              </td>
+                              <td className="p-4 text-sm text-card-foreground numbers-idgrotesk">
+                                {formatDate(r.createdAt)}
+                                <div className="text-xs text-muted-foreground">{formatTime(r.createdAt)}</div>
+                              </td>
+                              <td className="p-4">
+                                <button
+                                  onClick={() => openDetail(r)}
+                                  className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-medium border border-primary/20"
+                                >
+                                  Détail
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </CardContent>
             </Card>
+
           </div>
         </main>
       </div>
 
-      {/* Modal de détails de commande */}
-      {selectedOrder && (
-        <OrderDetailsModal
-          order={selectedOrder}
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-        />
+      {/* Modale détail */}
+      {selected && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className="bg-card border border-border rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* En-tête modale */}
+            <div className="flex items-center justify-between p-6 border-b border-border">
+              <div>
+                <h2 className="text-lg font-bold text-card-foreground">Détail de la commande</h2>
+                <p className="text-muted-foreground text-xs mt-0.5 numbers-idgrotesk">
+                  #{selected.id.slice(0, 8).toUpperCase()}
+                </p>
+              </div>
+              <button onClick={() => setSelected(null)} className="text-muted-foreground hover:text-card-foreground transition-colors">
+                <X weight="bold" className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+
+              {/* Client */}
+              <div className="bg-background border border-border rounded-xl p-4">
+                <h3 className="text-muted-foreground text-xs uppercase tracking-wider font-medium mb-3">Client</h3>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
+                    <User weight="duotone" className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <div className="text-card-foreground font-semibold text-sm">{selected.user.name}</div>
+                    <div className="flex items-center gap-1.5 text-muted-foreground text-xs mt-0.5">
+                      <EnvelopeSimple weight="duotone" className="w-3.5 h-3.5" />
+                      {selected.user.email}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Service + statut */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-background border border-border rounded-xl p-4">
+                  <h3 className="text-muted-foreground text-xs uppercase tracking-wider font-medium mb-2">Service</h3>
+                  <div className="flex items-center gap-2 text-card-foreground font-medium text-sm">
+                    <span className="text-primary">{SERVICE_ICONS[selected.serviceType]}</span>
+                    {SERVICE_LABELS[selected.serviceType] ?? selected.serviceType}
+                  </div>
+                </div>
+                <div className="bg-background border border-border rounded-xl p-4">
+                  <h3 className="text-muted-foreground text-xs uppercase tracking-wider font-medium mb-2">Statut</h3>
+                  {(() => {
+                    const st = getStatusDisplay(selected);
+                    return (
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${st.className}`}>
+                        {st.label}
+                      </span>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Localisation */}
+              <div className="bg-background border border-border rounded-xl p-4">
+                <h3 className="text-muted-foreground text-xs uppercase tracking-wider font-medium mb-2">Localisation</h3>
+                <div className="flex items-start gap-2 text-card-foreground text-sm">
+                  <MapPin weight="duotone" className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                  {selected.location}
+                </div>
+              </div>
+
+              {/* Description */}
+              {selected.description && (
+                <div className="bg-background border border-border rounded-xl p-4">
+                  <h3 className="text-muted-foreground text-xs uppercase tracking-wider font-medium mb-2">Notes</h3>
+                  <div className="flex items-start gap-2 text-muted-foreground text-sm">
+                    <TextAlignLeft weight="duotone" className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{selected.description}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Date */}
+              <div className="bg-background border border-border rounded-xl p-4">
+                <h3 className="text-muted-foreground text-xs uppercase tracking-wider font-medium mb-2">Date</h3>
+                <div className="flex items-center gap-2 text-card-foreground text-sm numbers-idgrotesk">
+                  <CalendarBlank weight="duotone" className="w-4 h-4 text-primary" />
+                  {formatDate(selected.createdAt)} à {formatTime(selected.createdAt)}
+                </div>
+              </div>
+
+              {/* Attribution chauffeur */}
+              <div className="bg-background border border-border rounded-xl p-4 space-y-3">
+                <h3 className="text-muted-foreground text-xs uppercase tracking-wider font-medium flex items-center gap-2">
+                  <Truck weight="duotone" className="w-4 h-4 text-primary" />
+                  Attribution chauffeur
+                </h3>
+
+                {selected.driver ? (
+                  <div className="flex items-center gap-3 p-2.5 bg-primary/8 border border-primary/20 rounded-lg">
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                      <User weight="duotone" className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <div className="text-card-foreground font-semibold text-sm">{selected.driver.name}</div>
+                      <div className="text-muted-foreground text-xs">{selected.driver.email}</div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-sm italic">Aucun chauffeur assigné</p>
+                )}
+
+                {selected.status !== "COMPLETED" && selected.status !== "REJECTED" && (
+                  drivers.length > 0 ? (
+                    <div className="flex gap-2">
+                      <select
+                        value={pendingDriver}
+                        onChange={(e) => setPendingDriver(e.target.value)}
+                        disabled={assigning}
+                        className="flex-1 px-3 py-2 bg-secondary border border-border rounded-lg text-card-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                      >
+                        <option value="">— Sélectionner un chauffeur —</option>
+                        {drivers.map((d) => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={assignDriver}
+                        disabled={assigning || !pendingDriver}
+                        className="px-4 py-2 rounded-lg bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-all disabled:opacity-40 flex items-center gap-1.5 shrink-0"
+                      >
+                        {assigning
+                          ? <Spinner weight="duotone" className="w-4 h-4 animate-spin" />
+                          : <Truck weight="duotone" className="w-4 h-4" />
+                        }
+                        Attribuer
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground text-xs">
+                      Aucun chauffeur disponible. Ajoutez-en un depuis la page <strong>Flotte</strong>.
+                    </p>
+                  )
+                )}
+              </div>
+
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

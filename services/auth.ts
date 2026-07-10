@@ -1,8 +1,10 @@
 import bcrypt from "bcrypt";
 import { SignJWT, jwtVerify } from "jose";
 
-const JWT_SECRET =
-  process.env.JWT_SECRET || "super-secret-key-change-me-in-production";
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is not set. Add it to your .env file.");
+}
 const encodedSecret = new TextEncoder().encode(JWT_SECRET);
 
 export async function hashPassword(password: string): Promise<string> {
@@ -26,7 +28,7 @@ export async function signToken(payload: {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("24h")
+    .setExpirationTime("7d")
     .sign(encodedSecret);
 }
 

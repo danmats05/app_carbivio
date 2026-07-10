@@ -26,6 +26,7 @@ import {
 
 type ServiceLink = {
   title: string;
+  slug: string;
   icon: LucideIcon;
   description: string;
 };
@@ -33,46 +34,41 @@ type ServiceLink = {
 const serviceLinks: ServiceLink[] = [
   {
     title: "Carburant",
+    slug: "carburant",
     description: "Livraison en moins de 20 min, 24h/24",
     icon: Fuel,
   },
   {
     title: "Batterie",
+    slug: "batterie",
     description: "Recharge et remplacement sur place",
     icon: BatteryCharging,
   },
   {
     title: "Huile moteur",
+    slug: "huile-moteur",
     description: "Vidange et maintenance moteur",
     icon: Wrench,
   },
   {
     title: "Pneus",
+    slug: "pneus",
     description: "Dépannage et remplacement immédiat",
     icon: CircleDot,
   },
   {
     title: "Urgence",
+    slug: "urgence",
     description: "Assistance d'urgence 24h/24 et 7j/7",
     icon: TriangleAlert,
   },
 ];
 
-function ServiceItem({
-  item,
-  onClick,
-}: {
-  item: ServiceLink;
-  onClick?: () => void;
-}) {
+function ServiceItem({ item }: { item: ServiceLink }) {
   return (
     <NavigationMenuLink asChild>
-      <a
-        href="#services"
-        onClick={(e) => {
-          e.preventDefault();
-          onClick?.();
-        }}
+      <Link
+        href={`/services/${item.slug}`}
         className="flex flex-row gap-x-3 hover:bg-white/10 focus:bg-white/10 rounded-lg p-2.5 transition-colors cursor-pointer outline-none"
       >
         <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded-md border border-white/20 bg-white/5 shadow-sm">
@@ -84,7 +80,7 @@ function ServiceItem({
             {item.description}
           </span>
         </div>
-      </a>
+      </Link>
     </NavigationMenuLink>
   );
 }
@@ -97,7 +93,8 @@ function MobileServiceItem({
   onClick?: () => void;
 }) {
   return (
-    <button
+    <Link
+      href={`/services/${item.slug}`}
       onClick={() => onClick?.()}
       className="flex flex-row gap-x-3 hover:bg-white/10 rounded-lg p-2.5 transition-colors cursor-pointer outline-none text-left w-full"
     >
@@ -110,7 +107,7 @@ function MobileServiceItem({
           {item.description}
         </span>
       </div>
-    </button>
+    </Link>
   );
 }
 
@@ -239,10 +236,7 @@ export function CarbivioNavbar({ onServiceClick }: CarbivioNavbarProps) {
                   <ul className="grid grid-cols-2 gap-1 p-2">
                     {serviceLinks.map((item) => (
                       <li key={item.title}>
-                        <ServiceItem
-                          item={item}
-                          onClick={() => handleServiceSelect(item.title)}
-                        />
+                        <ServiceItem item={item} />
                       </li>
                     ))}
                   </ul>

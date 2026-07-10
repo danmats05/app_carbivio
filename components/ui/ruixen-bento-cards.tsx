@@ -67,9 +67,11 @@ const PlusCard: React.FC<{
   description: string;
   slug: string;
   isSelected?: boolean;
-}> = ({ className = "", title, description, slug, isSelected = false }) => {
+  onClick?: () => void;
+}> = ({ className = "", title, description, slug, isSelected = false, onClick }) => {
   return (
     <div
+      onClick={onClick}
       className={cn(
         "group relative border border-dashed border-[#eca226]/30 rounded-lg p-6 min-h-[200px]",
         "flex flex-col justify-between transition-all duration-500 cursor-pointer",
@@ -171,9 +173,15 @@ const PlusIcon = ({
   </svg>
 );
 
+const serviceKeys = ["Carburant", "Batterie", "Huile moteur", "Pneus", "Urgence"];
+
 export default function RuixenBentoCards() {
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const sectionRef = React.useRef<HTMLElement>(null);
+
+  function handleCardClick(key: string) {
+    setSelectedService((prev) => (prev === key ? null : key));
+  }
 
   useEffect(() => {
     // S'abonner aux changements de sélection
@@ -220,27 +228,32 @@ export default function RuixenBentoCards() {
           <PlusCard
             {...carbivioServices[0]}
             className="lg:col-span-3"
-            isSelected={selectedService === "Carburant"}
+            isSelected={selectedService === serviceKeys[0]}
+            onClick={() => handleCardClick(serviceKeys[0])}
           />
           <PlusCard
             {...carbivioServices[1]}
             className="lg:col-span-3"
-            isSelected={selectedService === "Batterie"}
+            isSelected={selectedService === serviceKeys[1]}
+            onClick={() => handleCardClick(serviceKeys[1])}
           />
           <PlusCard
             {...carbivioServices[2]}
             className="lg:col-span-2"
-            isSelected={selectedService === "Huile moteur"}
+            isSelected={selectedService === serviceKeys[2]}
+            onClick={() => handleCardClick(serviceKeys[2])}
           />
           <PlusCard
             {...carbivioServices[3]}
             className="lg:col-span-2"
-            isSelected={selectedService === "Pneus"}
+            isSelected={selectedService === serviceKeys[3]}
+            onClick={() => handleCardClick(serviceKeys[3])}
           />
           <PlusCard
             {...carbivioServices[4]}
             className="lg:col-span-2 sm:col-span-2"
-            isSelected={selectedService === "Urgence"}
+            isSelected={selectedService === serviceKeys[4]}
+            onClick={() => handleCardClick(serviceKeys[4])}
           />
         </div>
 

@@ -50,8 +50,8 @@ export default function RegisterPage() {
         <div className="absolute -top-40 -left-40 w-150 h-150 rounded-full bg-[#eca226]/10 blur-[120px]" />
         <div className="absolute bottom-0 right-0 w-100 h-100 rounded-full bg-[#eca226]/5 blur-[80px]" />
         <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          <Link
-            href="/"
+          <button
+            onClick={() => router.back()}
             className="w-fit group flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed border-[#ff8c00]/50 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-[#eca226]/50 transition-all duration-300"
           >
             <ArrowLeftPhosphor
@@ -59,9 +59,9 @@ export default function RegisterPage() {
               weight="duotone"
             />
             <span className="text-white/80 group-hover:text-white text-sm font-medium transition-colors duration-300">
-              Accueil
+              Retour
             </span>
-          </Link>
+          </button>
 
           <div>
             <h1 className="font-montserrat font-extrabold text-5xl text-white leading-tight mb-6">
@@ -116,8 +116,8 @@ export default function RegisterPage() {
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md">
           <div className="mb-12 lg:hidden">
-            <Link
-              href="/"
+            <button
+              onClick={() => router.back()}
               className="w-fit group flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed border-[#ff8c00]/50 bg-white/5 backdrop-blur-sm hover:bg-white/10 hover:border-[#eca226]/50 transition-all duration-300 mb-8"
             >
               <ArrowLeftPhosphor
@@ -125,9 +125,9 @@ export default function RegisterPage() {
                 weight="duotone"
               />
               <span className="text-white/80 group-hover:text-white text-sm font-medium transition-colors duration-300">
-                Accueil
+                Retour
               </span>
-            </Link>
+            </button>
           </div>
 
           <div className="mb-10">

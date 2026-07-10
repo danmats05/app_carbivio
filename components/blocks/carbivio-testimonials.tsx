@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   CarbivioTestimonialCard,
@@ -23,6 +24,8 @@ export function CarbivioTestimonialsSection({
   testimonials,
   className,
 }: TestimonialsSectionProps) {
+  const [paused, setPaused] = useState(false);
+
   return (
     <section
       className={cn(
@@ -45,8 +48,15 @@ export function CarbivioTestimonialsSection({
         </div>
 
         <div className="relative flex w-full flex-col items-center justify-center overflow-hidden">
-          <div className="group flex overflow-hidden p-4 [--gap:2rem] [gap:var(--gap)] flex-row [--duration:60s]">
-            <div className="flex shrink-0 justify-around [gap:var(--gap)] animate-marquee flex-row group-hover:[animation-play-state:paused]">
+          <div
+            className="group flex overflow-hidden p-4 [--gap:2rem] gap-(--gap) flex-row [--duration:60s] cursor-pointer select-none"
+            onClick={() => setPaused((p) => !p)}
+            title={paused ? "Reprendre" : "Pause"}
+          >
+            <div
+              className="flex shrink-0 justify-around gap-(--gap) animate-marquee flex-row group-hover:paused"
+              style={paused ? { animationPlayState: "paused" } : undefined}
+            >
               {[...Array(8)].map((_, setIndex) =>
                 testimonials.map((testimonial, i) => (
                   <CarbivioTestimonialCard

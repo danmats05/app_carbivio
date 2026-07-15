@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 import {
   Card,
   CardContent,
@@ -43,10 +45,13 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export function DeliveryChart({ data, period }: DeliveryChartProps) {
   const { chartValue, chartLabel } = useFont();
 
-  // Debug: afficher les données reçues
-  console.log("DeliveryChart - data reçu:", data);
-  console.log("DeliveryChart - period reçu:", period);
-  console.log("DeliveryChart - data length:", data?.length);
+  // Le graphique n'est rendu qu'après le montage côté client : Recharts mesure
+  // ainsi un conteneur déjà dimensionné et n'obtient plus width/height = -1,
+  // ce qui pouvait faire planter la page sous React 19 (exception côté client).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const getPeriodDescription = (period: string) => {
     switch (period) {
@@ -77,17 +82,6 @@ export function DeliveryChart({ data, period }: DeliveryChartProps) {
           { date: "Dim", livraisons: 15, volume: 21000 },
         ];
 
-  // Debug supplémentaire
-  if (data && data.length > 0) {
-    console.log(
-      "DeliveryChart - Utilisation des données dynamiques:",
-      data.length,
-      "points",
-    );
-  } else {
-    console.log("DeliveryChart - Utilisation des données fallback (7 jours)");
-  }
-
   return (
     <Card className="bg-card border-border">
       <CardHeader>
@@ -100,6 +94,7 @@ export function DeliveryChart({ data, period }: DeliveryChartProps) {
       </CardHeader>
       <CardContent>
         <div style={{ width: "100%", height: "300px" }}>
+          {mounted && (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
@@ -151,6 +146,7 @@ export function DeliveryChart({ data, period }: DeliveryChartProps) {
               />
             </AreaChart>
           </ResponsiveContainer>
+          )}
         </div>
       </CardContent>
     </Card>

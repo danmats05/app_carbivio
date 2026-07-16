@@ -63,15 +63,13 @@ export default async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/client", req.nextUrl));
   }
 
-  // Handle public-only routes (login, register) for ALREADY logged in users
+  // Utilisateur DÉJÀ connecté qui revient sur /login, /register, etc. :
+  // on le déconnecte (on efface le cookie de session) et on affiche le
+  // formulaire, pour pouvoir se reconnecter avec un autre compte/rôle.
   if (isPublicOnly && payload) {
-    if (payload.role === "ADMIN") {
-      return NextResponse.redirect(new URL("/admin", req.nextUrl));
-    }
-    if (payload.role === "DRIVER") {
-      return NextResponse.redirect(new URL("/driver", req.nextUrl));
-    }
-    return NextResponse.redirect(new URL("/client", req.nextUrl));
+    const res = NextResponse.next();
+    res.cookies.set("auth_token", "", { path: "/", maxAge: 0 });
+    return res;
   }
 
   return NextResponse.next();

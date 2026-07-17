@@ -20,6 +20,9 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "Carbivio SaaS",
   description: "Professional SaaS Platform",
+  // Empêche la traduction automatique du navigateur (Google Translate) :
+  // elle modifie le DOM et fait planter React ("removeChild NotFoundError").
+  other: { google: "notranslate" },
 };
 
 export default function RootLayout({
@@ -28,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="fr" translate="no" className="dark">
       <body
         className={`${inter.variable} ${montserrat.variable} font-sans antialiased`}
       >

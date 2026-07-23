@@ -49,14 +49,6 @@ Ouvrez ensuite [http://localhost:3000](http://localhost:3000).
 
 > Créés via `prisma/seed.ts`
 
-### Administrateur
-
-| Champ            | Valeur               |
-| ---------------- | -------------------- |
-| **Email**        | `admin@carbivio.com` |
-| **Mot de passe** | `admin123456`        |
-| **Rôle**         | `ADMIN`              |
-
 ### Chauffeur
 
 Créer un compte via `/register`, puis assigner le rôle `DRIVER` :
